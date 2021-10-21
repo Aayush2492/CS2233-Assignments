@@ -52,7 +52,8 @@ int main()
     ptr->insertIntoAVL(ptr, "w");
     ptr->inorderTravesal(ptr->root);
     ptr->insertIntoAVL(ptr, "z");
-    // ptr->insertIntoAVL(ptr, "v");
+    ptr->inorderTravesal(ptr->root);
+    ptr->insertIntoAVL(ptr, "r");
     // ptr->insertIntoAVL(ptr, "c");
 
     ptr->inorderTravesal(ptr->root);

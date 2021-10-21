@@ -94,7 +94,7 @@ void insertIntoAVLNotInStruct(avl_tree* treePtr, char* songToBeAdded)
                     rightRotate(treePtr, unbalancedNode);
                 }
             }
-            else if(unbalancedNode->right != NULL)
+            if(unbalancedNode->right != NULL)
             {
                 if(unbalancedNode->right->right == unbalancedNodeGrandchild)
                 {
@@ -211,7 +211,7 @@ void rightRotate(avl_tree* treePtr, tree_node* nodePtr)
         x->height = (int)(max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1);
         x = x->parent;
     } while(x != NULL);
-    
+     
     // x->height = (int)max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1;
     // y->height = (int)max(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
 }
