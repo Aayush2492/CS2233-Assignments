@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "queue_by_linked_list.h": "c",
+    "node.h": "c"
+  }
+}
