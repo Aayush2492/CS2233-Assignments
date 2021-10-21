@@ -16,3 +16,10 @@ int max(int a, int b)
 {
     return((a>b)?a:b);
 }
+
+void swapStrings(char** a, char** b)
+{
+    char* temp = *a;
+    *a = *b;
+    *b = temp;
+}

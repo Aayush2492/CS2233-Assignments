@@ -8,5 +8,6 @@
 bool compareStrings(char *a, char *b);
 int min(int, int);
 int max(int, int);
+void swapStrings(char**, char**);
 
 #endif

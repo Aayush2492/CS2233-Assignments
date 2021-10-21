@@ -17,7 +17,7 @@ typedef struct binary_search_tree
     tree_node *(*maximumBST)(tree_node *);
     tree_node *(*successorBST)(tree_node *);
     tree_node *(*predecessorBST)(tree_node *);
-    void (*deleteFromBST)(tree_node *);
+    void (*deleteFromBST)(struct binary_search_tree* ,tree_node *);
 
 } binary_search_tree;
 
@@ -30,6 +30,6 @@ tree_node *minimumBSTNotInStruct(tree_node *);
 tree_node *maximumBSTNotInStruct(tree_node *);
 tree_node *successorBSTNotInStruct(tree_node *);
 tree_node *predecessorBSTNotInStruct(tree_node *);
-void deleteFromBSTNotInStruct(tree_node *);
+void deleteFromBSTNotInStruct(binary_search_tree*, tree_node *);
 
 #endif

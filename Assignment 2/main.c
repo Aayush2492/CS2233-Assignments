@@ -1,11 +1,43 @@
-/*#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "binary_search_tree.h"
+#include "file_reader.h"
+
+void readFile(binary_search_tree* treePtr)
+{
+    char *lineptr = NULL;
+    size_t len;
+    size_t read;
+    FILE* fp = fopen("input.txt", "r");
+    if (fp == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    while((read = getdelim(&lineptr, &len, 58, fp)) != -1) 
+    {
+        // Remove the trailing ':' from the end
+        int length = strlen(lineptr);
+        if(lineptr[length-1]==':')
+        {
+            lineptr[length-1]='\0';
+        }
+
+        treePtr->insertIntoBST(treePtr, lineptr);
+        // printf("%s\n", lineptr);
+    }
+}
 
 int main()
 {
     binary_search_tree* ptr = newBinarySearchTree();
+
+    //readFile(ptr);
+
+    //ptr->inorderTravesal(ptr->root);
 
     ptr->insertIntoBST(ptr, "q");
     ptr->insertIntoBST(ptr, "a");
@@ -28,13 +60,14 @@ int main()
     printf("Predecessor: %s\n",ptr->predecessorBST(ptr->root->right)->song);
 
     printf("Blah blah: %s\n", ptr->root->right->song);
-    ptr->deleteFromBST(ptr->root->right);
+    ptr->deleteFromBST(ptr, ptr->root->right);
     ptr->inorderTravesal(ptr->root);
+    printf("Blah blah: %s\n", ptr->root->right->song);
     
     return 0;
-}*/
+}
 
-#include <stdio.h>
+/*include <stdio.h>
 #include <stdlib.h>
 
 #include "avl_tree.h"
@@ -54,7 +87,10 @@ int main()
     ptr->insertIntoAVL(ptr, "z");
     ptr->inorderTravesal(ptr->root);
     ptr->insertIntoAVL(ptr, "r");
-    // ptr->insertIntoAVL(ptr, "c");
+    ptr->inorderTravesal(ptr->root);
+    ptr->insertIntoAVL(ptr, "s");
+    ptr->inorderTravesal(ptr->root);
+    ptr->insertIntoAVL(ptr, "t");
 
     ptr->inorderTravesal(ptr->root);
     
@@ -73,4 +109,4 @@ int main()
     // ptr->inorderTravesal(ptr->root);
     
     return 0;
-}
+}*/

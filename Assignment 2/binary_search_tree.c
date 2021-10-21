@@ -50,11 +50,13 @@ void insertIntoBSTNotInStruct(binary_search_tree* treePtr, char* songToBeAdded)
         
         if(compareStrings(y->song, songToBeAdded))
         {
-            y->left = newSong;            
+            y->left = newSong;
+            printf("Inserted on left: %s\n",y->left->song);          
         }
         else
         {
             y->right = newSong;
+            printf("Inserted on right: %s\n",y->right->song);
         }
 
     }
@@ -149,14 +151,14 @@ tree_node* predecessorBSTNotInStruct(tree_node* treeNodePtr)
     }
 }
 
-void deleteFromBSTNotInStruct(tree_node* treeNodePtr)
+void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr)
 {
     printf("Inside the delete\n");
-    if(treeNodePtr->left == NULL && treeNodePtr->right == NULL)
+    if(treeNodePtr->left == NULL && treeNodePtr->right == NULL)// Leaf node
     {
-        if(treeNodePtr->parent == NULL)// This is the only node or root node
+        if(treeNodePtr->parent == NULL)// This is the only node
         {
-
+            treePtr->root = NULL;
         }
         else
         {
@@ -171,17 +173,24 @@ void deleteFromBSTNotInStruct(tree_node* treeNodePtr)
         }
         free(treeNodePtr);
     }
-    else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// No left child
+    else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// only right child
     {
         treeNodePtr->right->parent = treeNodePtr->parent;
 
-        if(treeNodePtr->parent->left == treeNodePtr)
+        if(treeNodePtr->parent != NULL)
         {
-            treeNodePtr->parent->left = treeNodePtr->right;
+            if(treeNodePtr->parent->left == treeNodePtr)
+            {
+                treeNodePtr->parent->left = treeNodePtr->right;
+            }
+            else if(treeNodePtr->parent->right == treeNodePtr)
+            {
+                treeNodePtr->parent->right = treeNodePtr->right;
+            }
         }
-        else if(treeNodePtr->parent->right == treeNodePtr)
+        else
         {
-            treeNodePtr->parent->right = treeNodePtr->right;
+            treePtr->root = treeNodePtr->right;
         }
         free(treeNodePtr);
     }
@@ -189,14 +198,22 @@ void deleteFromBSTNotInStruct(tree_node* treeNodePtr)
     {
         treeNodePtr->left->parent = treeNodePtr->parent;
 
-        if(treeNodePtr->parent->left == treeNodePtr)
+        if(treeNodePtr->parent != NULL)
         {
-            treeNodePtr->parent->left = treeNodePtr->left;
+            if(treeNodePtr->parent->left == treeNodePtr)
+            {
+                treeNodePtr->parent->left = treeNodePtr->left;
+            }
+            else if(treeNodePtr->parent->right == treeNodePtr)
+            {
+                treeNodePtr->parent->right = treeNodePtr->left;
+            }
         }
-        else if(treeNodePtr->parent->right == treeNodePtr)
+        else
         {
-            treeNodePtr->parent->right = treeNodePtr->left;
+            treePtr->root = treeNodePtr->left;
         }
+
         free(treeNodePtr);
     }
     else // Two children
@@ -204,8 +221,8 @@ void deleteFromBSTNotInStruct(tree_node* treeNodePtr)
         printf("Inside the else of delete\n");
         tree_node* successorOfNodeToBeDeleted = successorBSTNotInStruct(treeNodePtr);
         printf("After getting successor\n");
-        //strcpy(treeNodePtr->song, successorOfNodeToBeDeleted->song);
+        swapStrings(&treeNodePtr->song, &successorOfNodeToBeDeleted->song);
         printf("After using strcpy\n");
-        deleteFromBSTNotInStruct(successorOfNodeToBeDeleted);
+        deleteFromBSTNotInStruct(treePtr, successorOfNodeToBeDeleted);
     }
 }
