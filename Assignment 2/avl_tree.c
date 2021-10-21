@@ -84,12 +84,12 @@ void insertIntoAVLNotInStruct(avl_tree* treePtr, char* songToBeAdded)
             {
                 if(unbalancedNode->left->left == unbalancedNodeGrandchild)
                 {
-                    printf("Am i here?\n");
+                    printf("left left imbalance\n");
                     rightRotate(treePtr, unbalancedNode);
                 }
                 else if(unbalancedNode->left->right == unbalancedNodeGrandchild)
                 {
-                    printf("Am i here2?\n");
+                    printf("left right imbalance\n");
                     leftRotate(treePtr, unbalancedNodeGrandchild->parent);
                     rightRotate(treePtr, unbalancedNode);
                 }
@@ -98,12 +98,12 @@ void insertIntoAVLNotInStruct(avl_tree* treePtr, char* songToBeAdded)
             {
                 if(unbalancedNode->right->right == unbalancedNodeGrandchild)
                 {
-                    printf("Am i here?\n");
+                    printf("right right imbalance\n");
                     leftRotate(treePtr, unbalancedNode);
                 }
                 else if(unbalancedNode->right->left == unbalancedNodeGrandchild)
                 {
-                    printf("Am i here?\n");
+                    printf("right left imbalance\n");
                     rightRotate(treePtr, unbalancedNodeGrandchild->parent);
                     leftRotate(treePtr, unbalancedNode);
                 }
@@ -170,8 +170,13 @@ void leftRotate(avl_tree* treePtr, tree_node* nodePtr)
     }
     y->left = x;
 
-    x->height = (int)max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1;
-    y->height = (int)max(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
+    do
+    {
+        x->height = (int)(max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1);
+        x = x->parent;
+    } while(x != NULL);
+    // x->height = (int)max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1;
+    // y->height = (int)max(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
 }
 
 void rightRotate(avl_tree* treePtr, tree_node* nodePtr)
@@ -201,8 +206,14 @@ void rightRotate(avl_tree* treePtr, tree_node* nodePtr)
     }
     y->right = x;//
 
-    x->height = (int)max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1;
-    y->height = (int)max(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
+    do
+    {
+        x->height = (int)(max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1);
+        x = x->parent;
+    } while(x != NULL);
+    
+    // x->height = (int)max(getHeightOfNode(x->left), getHeightOfNode(x->right)) + 1;
+    // y->height = (int)max(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
 }
 
 void deleteFromAVLNotInStruct(tree_node * treeNodePtr)
