@@ -1,14 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "file_reader.h"
+#include "helpful_functions.h"
 
 void readFile(binary_search_tree* treePtr)
 {
-    FILE* fp = fopen("input.txt", "r");
     char *lineptr = NULL;
     size_t len;
     size_t read;
+    FILE* fp = fopen("input.txt", "r");
     if (fp == NULL)
     {
         printf("Error opening file!\n");
@@ -17,13 +19,16 @@ void readFile(binary_search_tree* treePtr)
 
     while((read = getdelim(&lineptr, &len, 58, fp)) != -1) 
     {
+        // Remove the trailing ':' from the end
         int length = strlen(lineptr);
-
         if(lineptr[length-1]==':')
         {
             lineptr[length-1]='\0';
         }
-    
-        printf("%s\n", lineptr);
+
+        char* dest = (char *)(malloc(sizeof(char) * 50));
+        strcpy(dest, lineptr);
+        treePtr->insertIntoBST(treePtr, dest);
+        printf("%s\n", dest);
     }
 }

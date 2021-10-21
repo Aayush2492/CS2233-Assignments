@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -c -Wall
-OBJS = node.o binary_search_tree.o avl_tree.o helpful_functions.o main.o
+OBJS = file_reader.o node.o binary_search_tree.o avl_tree.o helpful_functions.o main.o
 TARGET = exec
 
 all: MAIN
@@ -22,6 +22,9 @@ avl_tree.o: avl_tree.c
 
 helpful_functions.o: helpful_functions.c
 		$(CC) $(CFLAGS) helpful_functions.c
+
+file_reader.o: file_reader.c
+		$(CC) $(CFLAGS) file_reader.c
 
 clean:
 		rm -rf $(OBJS) $(TARGET) *~
