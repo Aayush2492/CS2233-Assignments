@@ -21,6 +21,7 @@ avl_tree* newAVLTree()
     ptr->deleteFromAVL = deleteFromAVLNotInStruct;
     ptr->getUnbalancedNodeGrandchild = getUnbalancedNodeGrandchildNotInStruct;
     ptr->getUnbalancedNodeForDelete = getUnbalancedNodeForDeleteNotInStruct;
+    ptr->rebalanceAfterDeletion = rebalanceAfterDeletionNotInStruct;
 
     return(ptr);
 }
@@ -110,6 +111,8 @@ void insertIntoAVLNotInStruct(avl_tree* treePtr, char* songToBeAdded)
                 }
             }
         }
+        printf("After rebalancing\n");
+        treePtr->inorderTravesal(treePtr->root);
 
     }
 }
@@ -228,6 +231,7 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
         }
         else
         {
+            printf("Inside the delete: Leaf case\n");
             if(treeNodePtr->parent->left == treeNodePtr)
             {
                 treeNodePtr->parent->left = NULL;
@@ -236,6 +240,18 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
             {
                 treeNodePtr->parent->right = NULL;
             }
+
+            tree_node* parentOfDeletedNode = treeNodePtr->parent;
+            tree_node* parentOfDeletedNodeTemp = treeNodePtr->parent;
+            do
+            {
+                parentOfDeletedNode->height = (int)(max(getHeightOfNode(parentOfDeletedNode->left), getHeightOfNode(parentOfDeletedNode->right)) + 1);
+                parentOfDeletedNode = parentOfDeletedNode->parent;
+            } while(parentOfDeletedNode != NULL);
+            printf("After height update\n");
+            treePtr->inorderTravesal(treePtr->root);
+            getUnbalancedNodeForDeleteNotInStruct(treePtr, parentOfDeletedNodeTemp);
+
         }
 
         free(treeNodePtr);
@@ -243,7 +259,7 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
     else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// only right child
     {
         treeNodePtr->right->parent = treeNodePtr->parent;
-
+        printf("Inside the delete: right case\n");
         if(treeNodePtr->parent != NULL)
         {
             if(treeNodePtr->parent->left == treeNodePtr)
@@ -260,6 +276,15 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
             treePtr->root = treeNodePtr->right;
         }
 
+        tree_node* parentOfDeletedNode = treeNodePtr->parent;
+        tree_node* parentOfDeletedNodeTemp = treeNodePtr->parent;
+        do
+        {
+            parentOfDeletedNode->height = (int)(max(getHeightOfNode(parentOfDeletedNode->left), getHeightOfNode(parentOfDeletedNode->right)) + 1);
+            parentOfDeletedNode = parentOfDeletedNode->parent; 
+        } while(parentOfDeletedNode != NULL);
+        getUnbalancedNodeForDeleteNotInStruct(treePtr, parentOfDeletedNodeTemp);
+
         free(treeNodePtr);
     }
     else if(treeNodePtr->left != NULL && treeNodePtr->right == NULL)// only left child
@@ -268,6 +293,7 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
 
         if(treeNodePtr->parent != NULL)
         {
+            printf("Inside the delete: left case\n");
             if(treeNodePtr->parent->left == treeNodePtr)
             {
                 treeNodePtr->parent->left = treeNodePtr->left;
@@ -281,24 +307,95 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
         {
             treePtr->root = treeNodePtr->left;
         }
-        
+
+        tree_node* parentOfDeletedNode = treeNodePtr->parent;
+        tree_node* parentOfDeletedNodeTemp = treeNodePtr->parent;
+        do
+        {
+            parentOfDeletedNode->height = (int)(max(getHeightOfNode(parentOfDeletedNode->left), getHeightOfNode(parentOfDeletedNode->right)) + 1);
+            parentOfDeletedNode = parentOfDeletedNode->parent;
+        } while(parentOfDeletedNode != NULL);
+        getUnbalancedNodeForDeleteNotInStruct(treePtr, parentOfDeletedNodeTemp);
+
         free(treeNodePtr);
     }
     else // Two children
     {
         printf("Inside the else of delete\n");
-        tree_node* successorOfNodeToBeDeleted = successorAVLNotInStruct(treeNodePtr);
+        tree_node* successorOfNodeToBeDeleted = treePtr->successorAVL(treeNodePtr);
         printf("After getting successor\n");
         swapStrings(&treeNodePtr->song, &successorOfNodeToBeDeleted->song);
         printf("After using strcpy\n");
         deleteFromAVLNotInStruct(treePtr, successorOfNodeToBeDeleted);
     }
-
-
-
 }
 
-tree_node* getUnbalancedNodeForDeleteNotInStruct(tree_node* parentOfDeletedNode)
+void getUnbalancedNodeForDeleteNotInStruct(avl_tree* treePtr, tree_node* parentOfDeletedNode)
 {
+    do
+    {
+        printf("%s\n", parentOfDeletedNode->song);
+        if(abs(getHeightOfNode(parentOfDeletedNode->left)-getHeightOfNode(parentOfDeletedNode->right)) > 1)
+        {
+            rebalanceAfterDeletionNotInStruct(treePtr, parentOfDeletedNode);
+        }
+        else
+        {
+            parentOfDeletedNode = parentOfDeletedNode->parent;
+        }
+    }while(parentOfDeletedNode != NULL);
     
 }
+
+void rebalanceAfterDeletionNotInStruct(avl_tree* treePtr, tree_node* unbalancedNode)
+{
+    if(getHeightOfNode(unbalancedNode->left) > getHeightOfNode(unbalancedNode->right))
+    {
+        if(getHeightOfNode(unbalancedNode->left->left) >= getHeightOfNode(unbalancedNode->left->right))
+        {
+            //left left
+            printf("left left\n");
+            rightRotate(treePtr, unbalancedNode);
+        }
+        else
+        {
+            printf("left right\n");
+            leftRotate(treePtr, unbalancedNode->left);
+            rightRotate(treePtr, unbalancedNode);
+        }
+    }
+    else //right>=left
+    {
+        if(getHeightOfNode(unbalancedNode->right->right) >= getHeightOfNode(unbalancedNode->right->left))
+        {
+            //right right
+            printf("right right\n");
+            leftRotate(treePtr, unbalancedNode);
+        }
+        else
+        {
+            //right left
+            printf("right left\n");
+            rightRotate(treePtr, unbalancedNode->right);
+            leftRotate(treePtr, unbalancedNode);
+        }
+    }
+}
+// {
+//     printf("left left imbalance\n");
+//     rightRotate(treePtr, unbalancedNode);
+// }
+// {
+//     printf("left right imbalance\n");
+//     leftRotate(treePtr, unbalancedNodeGrandchild->parent);
+//     rightRotate(treePtr, unbalancedNode);
+// }
+// {
+//     printf("right right imbalance\n");
+//     leftRotate(treePtr, unbalancedNode);
+// }
+// {
+//     printf("right left imbalance\n");
+//     rightRotate(treePtr, unbalancedNodeGrandchild->parent);
+//     leftRotate(treePtr, unbalancedNode);
+// }

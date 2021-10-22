@@ -173,7 +173,7 @@ void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr
         }
         free(treeNodePtr);
     }
-    else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// only right child
+    else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// only right subtree
     {
         treeNodePtr->right->parent = treeNodePtr->parent;
 
@@ -194,7 +194,7 @@ void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr
         }
         free(treeNodePtr);
     }
-    else if(treeNodePtr->left != NULL && treeNodePtr->right == NULL)// No right child
+    else if(treeNodePtr->left != NULL && treeNodePtr->right == NULL)// only left subtree
     {
         treeNodePtr->left->parent = treeNodePtr->parent;
 

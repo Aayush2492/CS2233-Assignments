@@ -68,6 +68,10 @@ int main()
     avl_tree* ptr = newAVLTree();
     readFileTemp(ptr);
 
+    ptr->deleteFromAVL(ptr, ptr->root->right->right->right);
+    ptr->insertIntoAVL(ptr, "x");
+    ptr->deleteFromAVL(ptr, ptr->root->right->left);
     ptr->inorderTravesal(ptr->root);
+
     return 0;
 }
