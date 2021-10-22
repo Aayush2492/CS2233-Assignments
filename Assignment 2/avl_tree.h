@@ -18,16 +18,18 @@ typedef struct avl_tree
     tree_node *(*maximumAVL)(tree_node *);
     tree_node *(*successorAVL)(tree_node *);
     tree_node *(*predecessorAVL)(tree_node *);
-    void (*deleteFromAVL)(tree_node *);
+    void (*deleteFromAVL)(avl_tree*, tree_node *);
     tree_node *(*getUnbalancedNodeGrandchild)(tree_node *);
+    tree_node *(*getUnbalancedNodeForDelete)(tree_node *);
 
 } avl_tree;
 
 // To pass tree ptr or to pass the root node ptr in function that is the question
 avl_tree *newAVLTree();
 void insertIntoAVLNotInStruct(avl_tree *, char *);
-void deleteFromAVLNotInStruct(tree_node *);
+void deleteFromAVLNotInStruct(avl_tree*, tree_node *);
 tree_node *getUnbalancedNodeGrandchildNotInStruct(tree_node *);
+tree_node *getUnbalancedNodeForDeleteNotInStruct(tree_node *);
 
 // Global
 void leftRotate(avl_tree *, tree_node *);

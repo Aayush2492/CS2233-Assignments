@@ -20,6 +20,7 @@ avl_tree* newAVLTree()
     ptr->insertIntoAVL = insertIntoAVLNotInStruct;
     ptr->deleteFromAVL = deleteFromAVLNotInStruct;
     ptr->getUnbalancedNodeGrandchild = getUnbalancedNodeGrandchildNotInStruct;
+    ptr->getUnbalancedNodeForDelete = getUnbalancedNodeForDeleteNotInStruct;
 
     return(ptr);
 }
@@ -216,7 +217,88 @@ void rightRotate(avl_tree* treePtr, tree_node* nodePtr)
     // y->height = (int)max(getHeightOfNode(y->left), getHeightOfNode(y->right)) + 1;
 }
 
-void deleteFromAVLNotInStruct(tree_node * treeNodePtr)
+void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
 {
+    printf("Inside the delete\n");
+    if(treeNodePtr->left == NULL && treeNodePtr->right == NULL)// Leaf node
+    {
+        if(treeNodePtr->parent == NULL)// This is the only node
+        {
+            treePtr->root = NULL;
+        }
+        else
+        {
+            if(treeNodePtr->parent->left == treeNodePtr)
+            {
+                treeNodePtr->parent->left = NULL;
+            }
+            else if(treeNodePtr->parent->right == treeNodePtr)
+            {
+                treeNodePtr->parent->right = NULL;
+            }
+        }
 
+        free(treeNodePtr);
+    }
+    else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// only right child
+    {
+        treeNodePtr->right->parent = treeNodePtr->parent;
+
+        if(treeNodePtr->parent != NULL)
+        {
+            if(treeNodePtr->parent->left == treeNodePtr)
+            {
+                treeNodePtr->parent->left = treeNodePtr->right;
+            }
+            else if(treeNodePtr->parent->right == treeNodePtr)
+            {
+                treeNodePtr->parent->right = treeNodePtr->right;
+            }
+        }
+        else
+        {
+            treePtr->root = treeNodePtr->right;
+        }
+
+        free(treeNodePtr);
+    }
+    else if(treeNodePtr->left != NULL && treeNodePtr->right == NULL)// only left child
+    {
+        treeNodePtr->left->parent = treeNodePtr->parent;
+
+        if(treeNodePtr->parent != NULL)
+        {
+            if(treeNodePtr->parent->left == treeNodePtr)
+            {
+                treeNodePtr->parent->left = treeNodePtr->left;
+            }
+            else if(treeNodePtr->parent->right == treeNodePtr)
+            {
+                treeNodePtr->parent->right = treeNodePtr->left;
+            }
+        }
+        else
+        {
+            treePtr->root = treeNodePtr->left;
+        }
+        
+        free(treeNodePtr);
+    }
+    else // Two children
+    {
+        printf("Inside the else of delete\n");
+        tree_node* successorOfNodeToBeDeleted = successorAVLNotInStruct(treeNodePtr);
+        printf("After getting successor\n");
+        swapStrings(&treeNodePtr->song, &successorOfNodeToBeDeleted->song);
+        printf("After using strcpy\n");
+        deleteFromAVLNotInStruct(treePtr, successorOfNodeToBeDeleted);
+    }
+
+
+
+}
+
+tree_node* getUnbalancedNodeForDeleteNotInStruct(tree_node* parentOfDeletedNode)
+{
+    
 }
