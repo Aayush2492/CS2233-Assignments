@@ -5,6 +5,8 @@
 #include "binary_search_tree.h"
 #include "avl_tree.h"
 #include "file_reader.h"
+#include "stack_by_linked_list.h"
+#include "queue_by_linked_list.h"
 
 int main()
 {
@@ -105,6 +107,74 @@ int main()
                 printf("%s has been removed from playlist\n", str);
             }
         }
+    }
+
+    stack* recentSongsStack = newStack();
+    queue* temporaryQueue = newQueue();
+    tree_node* currentSongNode = songPlaylist->minimumAVL(songPlaylist->root);
+    printf("Play next song, previous songs or end? n/p:k/e\n");
+    while(true)
+    {
+        char* str = (char*)malloc(sizeof(char)*50);
+        fgets(str, sizeof(str), stdin);
+
+        // Removing the trailing new line character from str
+        int len=strlen(str);
+        if(str[len-1]=='\n')
+            str[len-1]='\0';
+
+        if(!strcmp(str, "n"))
+        {
+            if(songPlaylist->root != NULL && currentSongNode != NULL)
+            {
+                printf("Playing %s\n", currentSongNode->song);
+                recentSongsStack->push(recentSongsStack, currentSongNode->song);
+                currentSongNode = songPlaylist->successorAVL(currentSongNode);
+            }
+            else
+            {
+                printf("Your playlist is empty\n");
+            }
+        }
+        else if (str[0]=='p' && str[1]==':')
+        {
+            // Removing the p and : from str
+            str = str + 2;
+
+            unsigned numberOfPreviousSongs = atoi(str);
+            for(int i = 1 ; i <= numberOfPreviousSongs ; i++)
+            {
+                if(recentSongsStack->numberOfElements==0)
+                {
+                    printf("There aren\'t %u previous songs\n", numberOfPreviousSongs);
+                }
+                else
+                {
+                    char* currentSong = recentSongsStack->top(recentSongsStack);
+                    printf("Playing %s\n", currentSong);
+                    recentSongsStack->pop(recentSongsStack);
+                    temporaryQueue->enqueue(temporaryQueue, currentSong);
+                }
+            }
+
+            //Emptying the temporary queue into the recent songs stack
+            unsigned initialSizeOfTempQueue = temporaryQueue->numberOfElements;
+            for(int i=1 ; i<=initialSizeOfTempQueue ; i++)
+            {
+                recentSongsStack->push(recentSongsStack, temporaryQueue->front(temporaryQueue));
+                temporaryQueue->dequeue(temporaryQueue);
+            }
+        }
+        else if(!strcmp(str, "e"))
+        {
+            printf("Bye\n");
+            break;
+        }
+        else
+        {
+            printf("Please enter a correct choice\n");
+        }
+        
     }
     return 0;
 }
