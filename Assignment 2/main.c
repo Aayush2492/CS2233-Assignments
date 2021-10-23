@@ -32,13 +32,13 @@ int main()
         else
         {
             tree_node* nodeFound = songLibrary->searchBST(songLibrary->root, str);
+            printf("%s\n", str);
             if(nodeFound == NULL)
             {
                 printf("This song is not in library\n");
             }
             else
             {
-                
                 songLibrary->deleteFromBST(songLibrary, nodeFound);
                 printf("%s has been removed from library\n", str);
             }
