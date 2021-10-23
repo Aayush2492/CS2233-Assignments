@@ -51,13 +51,11 @@ void insertIntoBSTNotInStruct(binary_search_tree* treePtr, char* songToBeAdded)
         
         if(compareStrings(y->song, songToBeAdded))
         {
-            y->left = newSong;
-            printf("Inserted on left: %s\n",y->left->song);          
+            y->left = newSong;       
         }
         else
         {
             y->right = newSong;
-            printf("Inserted on right: %s\n",y->right->song);
         }
 
     }
@@ -84,7 +82,6 @@ tree_node* searchBSTNotInStruct(tree_node* treeNodePtr, char* songToBeSearched)
     }
     else if(strcmp(x->song, songToBeSearched)==0)// Song found
     {
-        printf("%s\n", x->song);
         return(x);
     }
     else
@@ -158,7 +155,6 @@ tree_node* predecessorBSTNotInStruct(tree_node* treeNodePtr)
 
 void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr)
 {
-    printf("Inside the delete\n");
     if(treeNodePtr->left == NULL && treeNodePtr->right == NULL)// Leaf node
     {
         if(treeNodePtr->parent == NULL)// This is the only node
@@ -223,11 +219,8 @@ void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr
     }
     else // Two children of node to be deleted
     {
-        printf("Inside the else of delete\n");
         tree_node* successorOfNodeToBeDeleted = successorBSTNotInStruct(treeNodePtr);
-        printf("After getting successor\n");
         swapStrings(&treeNodePtr->song, &successorOfNodeToBeDeleted->song);
-        printf("After using strcpy\n");
         deleteFromBSTNotInStruct(treePtr, successorOfNodeToBeDeleted);
     }
 }
