@@ -13,7 +13,6 @@ int main()
     binary_search_tree* songLibrary = newBinarySearchTree();
 
     readFile(songLibrary);
-    songLibrary->inorderTravesal(songLibrary->root);
     
     printf("Enter name of the songs you want to remove from library. End with \"-1\"\n");
     while(1)
