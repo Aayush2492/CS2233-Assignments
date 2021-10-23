@@ -282,7 +282,6 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
 
         if(treeNodePtr->parent != NULL)
         {
-            printf("Inside the delete: left case\n");
             if(treeNodePtr->parent->left == treeNodePtr)
             {
                 treeNodePtr->parent->left = treeNodePtr->left;
@@ -310,11 +309,8 @@ void deleteFromAVLNotInStruct(avl_tree* treePtr, tree_node * treeNodePtr)
     }
     else // Two children
     {
-        printf("Inside the else of delete\n");
         tree_node* successorOfNodeToBeDeleted = treePtr->successorAVL(treeNodePtr);
-        printf("After getting successor\n");
         swapStrings(&treeNodePtr->song, &successorOfNodeToBeDeleted->song);
-        printf("After using strcpy\n");
         deleteFromAVLNotInStruct(treePtr, successorOfNodeToBeDeleted);
     }
 }
@@ -324,7 +320,6 @@ void getUnbalancedNodeForDeleteNotInStruct(avl_tree* treePtr, tree_node* parentO
 {
     do
     {
-        printf("%s\n", parentOfDeletedNode->song);
         if(abs(getHeightOfNode(parentOfDeletedNode->left)-getHeightOfNode(parentOfDeletedNode->right)) > 1)
         {
             rebalanceAfterDeletionNotInStruct(treePtr, parentOfDeletedNode);
@@ -344,12 +339,10 @@ void rebalanceAfterDeletionNotInStruct(avl_tree* treePtr, tree_node* unbalancedN
         if(getHeightOfNode(unbalancedNode->left->left) >= getHeightOfNode(unbalancedNode->left->right))
         {
             //left left
-            printf("left left\n");
             rightRotate(treePtr, unbalancedNode);
         }
         else
         {
-            printf("left right\n");
             leftRotate(treePtr, unbalancedNode->left);
             rightRotate(treePtr, unbalancedNode);
         }
@@ -359,13 +352,11 @@ void rebalanceAfterDeletionNotInStruct(avl_tree* treePtr, tree_node* unbalancedN
         if(getHeightOfNode(unbalancedNode->right->right) >= getHeightOfNode(unbalancedNode->right->left))
         {
             //right right
-            printf("right right\n");
             leftRotate(treePtr, unbalancedNode);
         }
         else
         {
             //right left
-            printf("right left\n");
             rightRotate(treePtr, unbalancedNode->right);
             leftRotate(treePtr, unbalancedNode);
         }

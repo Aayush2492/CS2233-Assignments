@@ -146,6 +146,7 @@ int main()
                 if(recentSongsStack->numberOfElements==0)
                 {
                     printf("There aren\'t %u previous songs\n", numberOfPreviousSongs);
+                    break;
                 }
                 else
                 {
