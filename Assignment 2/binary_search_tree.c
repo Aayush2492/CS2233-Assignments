@@ -77,7 +77,7 @@ void inorderTraversalNotInStruct(tree_node* treeNodePtr)
 tree_node* searchBSTNotInStruct(tree_node* treeNodePtr, char* songToBeSearched)
 {
     tree_node* x = treeNodePtr;
-    printf("%p\n", x);
+    printf("%s\n", x->song);
     if(x == NULL || (strcmp(x->song, songToBeSearched)==0) )
     {
         printf("Inside Search: %p\n",x);
@@ -85,7 +85,7 @@ tree_node* searchBSTNotInStruct(tree_node* treeNodePtr, char* songToBeSearched)
         return(x);
     }
     else
-    {        
+    { 
         if(compareStrings(x->song, songToBeSearched) > 0)
         {
             searchBSTNotInStruct(treeNodePtr->left,songToBeSearched);

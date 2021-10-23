@@ -29,7 +29,7 @@ void readFile(binary_search_tree* treePtr)
         char* dest = (char *)(malloc(sizeof(char) * 50));
         strcpy(dest, lineptr);
 
-        // If we insert the keys into the same sequential order as given in the file, 
+        // If we insert the keys into the same sequential order as given in the file(which is the preorder traversal), 
         // the generated tree will have the preorder traversal(NLR) as original file order
         treePtr->insertIntoBST(treePtr, dest);
     }

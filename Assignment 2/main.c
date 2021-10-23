@@ -6,34 +6,111 @@
 #include "avl_tree.h"
 #include "file_reader.h"
 
-/*
 int main()
 {
-    binary_search_tree* ptr = newBinarySearchTree();
+    binary_search_tree* songLibrary = newBinarySearchTree();
 
-    readFile(ptr);
-    ptr->inorderTravesal(ptr->root);
+    readFile(songLibrary);
+    songLibrary->inorderTravesal(songLibrary->root);
     
-    char* searchFor = "d";
-    tree_node* nodeFound = ptr->searchBST(ptr->root, searchFor);
-    printf("%s\n", nodeFound->song);
+    printf("Enter name of the songs you want to remove from library. End with \"-1\"\n");
+    while(1)
+    {
+        char* str = (char*)malloc(sizeof(char)*50);
+        fgets(str, sizeof(str), stdin);
 
-    printf("Minimum: %s\n", ptr->minimumBST(ptr->root)->song);
-    printf("Maximum: %s\n", ptr->maximumBST(ptr->root)->song);
+        // Removing the trailing new line character from str
+        int len = strlen(str);
+        if(str[len-1]=='\n')
+            str[len-1]='\0';
+        
+        if(!strcmp(str, "-1"))
+        {
+            printf("No more songs to be deleted from library !\n");
+            break;
+        }
+        else
+        {
+            tree_node* nodeFound = songLibrary->searchBST(songLibrary->root, str);
+            if(nodeFound == NULL)
+            {
+                printf("This song is not in library\n");
+            }
+            else
+            {
+                
+                songLibrary->deleteFromBST(songLibrary, nodeFound);
+                printf("%s has been removed from library\n", str);
+            }
+        }
+    }
 
-    printf("Successor: %s\n",ptr->successorBST(ptr->root->left->right)->song);
-    printf("Predecessor: %s\n",ptr->predecessorBST(ptr->root->right)->song);
+    avl_tree* songPlaylist = newAVLTree();
+    printf("Enter name of the songs you want to add to playlist. End with \"-1\"\n");
+    while(1)
+    {
+        char* str = (char*)malloc(sizeof(char)*50);
+        fgets(str, sizeof(str), stdin);
 
-    printf("Blah blah: %s\n", ptr->root->right->song);
-    ptr->deleteFromBST(ptr, ptr->root);
-    ptr->inorderTravesal(ptr->root);
-    printf("Blah blah: %s\n", ptr->root->song);
-    
+        // Removing the trailing new line character from str
+        int len = strlen(str);
+        if(str[len-1]=='\n')
+            str[len-1]='\0';
+        
+        if(!strcmp(str, "-1"))
+        {
+            printf("No more songs to add to library\n");
+            break;
+        }
+        else
+        {
+            tree_node* nodeFound = songLibrary->searchBST(songLibrary->root, str);
+            if(nodeFound == NULL)
+            {
+                printf("This song is not in library\n");
+            }
+            else
+            {
+                songPlaylist->insertIntoAVL(songPlaylist, nodeFound->song);
+                printf("%s has been added to playlist\n", nodeFound->song);
+            }
+        }
+    }
+
+    printf("Enter name of the songs you want to remove from playlist. End with \"-1\"\n");
+    while(1)
+    {
+        char* str = (char*)malloc(sizeof(char)*50);
+        fgets(str, sizeof(str), stdin);
+
+        // Removing the trailing new line character from str
+        int len = strlen(str);
+        if(str[len-1]=='\n')
+            str[len-1]='\0';
+        
+        if(!strcmp(str, "-1"))
+        {
+            printf("No more songs to be deleted from playlist!\n");
+            break;
+        }
+        else
+        {
+            tree_node* nodeFound = songPlaylist->searchAVL(songPlaylist->root, str);
+            if(nodeFound == NULL)
+            {
+                printf("This song is not in library\n");
+            }
+            else
+            {
+                songPlaylist->deleteFromAVL(songPlaylist, nodeFound);
+                printf("%s has been removed from playlist\n", str);
+            }
+        }
+    }
     return 0;
 }
-*/
 
-void readFileTemp(avl_tree* treePtr)
+/*void readFileTemp(avl_tree* treePtr)
 {
     char *lineptr = NULL;
     size_t len;
@@ -74,4 +151,4 @@ int main()
     ptr->inorderTravesal(ptr->root);
 
     return 0;
-}
+}*/
