@@ -25,7 +25,14 @@ typedef struct avl_tree
 
 } avl_tree;
 
-// To pass tree ptr or to pass the root node ptr in function that is the question
+/** 
+ * These functions are global functions and they will assigned to the function pointers present in the
+ * struct. Externally, the function pointers defined inside the struct will be called which will be 
+ * indirectly calling these global functions.
+ * 
+ * This is only done to give an "illusion" of OOP programming and encapsulation
+ * 
+ */
 avl_tree *newAVLTree();
 void insertIntoAVLNotInStruct(avl_tree *, char *);
 void deleteFromAVLNotInStruct(avl_tree*, tree_node *);

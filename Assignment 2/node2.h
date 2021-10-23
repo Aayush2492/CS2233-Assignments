@@ -9,6 +9,7 @@
 #ifndef I_GUARD_THE_NODE2_HEADER
 #define I_GUARD_THE_NODE2_HEADER
 
+// This node will be used by linked list and stack
 typedef struct songNode
 {
     char *songName;

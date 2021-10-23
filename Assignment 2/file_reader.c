@@ -17,6 +17,7 @@ void readFile(binary_search_tree* treePtr)
         exit(1);
     }
 
+    // 58 is the ASCII value of ':'. getdelim will set delimeter as :
     while((read = getdelim(&lineptr, &len, 58, fp)) != -1) 
     {
         // Remove the trailing ':' from the end

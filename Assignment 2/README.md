@@ -28,3 +28,7 @@ To delete the executable, run:
 ```
 make clean
 ```
+
+### Github link
+
+The code can be found here on [github](https://github.com/Aayush2492/CS2233-Assignments/tree/master/Assignment%202)

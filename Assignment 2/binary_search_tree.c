@@ -28,7 +28,8 @@ void insertIntoBSTNotInStruct(binary_search_tree* treePtr, char* songToBeAdded)
     {
         treePtr->root = newNode(songToBeAdded);
     }
-    else
+    else // y will be the parent of x and they will simultaneously go down the tree until x becomes NULL.
+         // y should be the new node
     {
         tree_node* y = NULL;
         tree_node* x = treePtr->root;
@@ -77,11 +78,11 @@ void inorderTraversalNotInStruct(tree_node* treeNodePtr)
 tree_node* searchBSTNotInStruct(tree_node* treeNodePtr, char* songToBeSearched)
 {
     tree_node* x = treeNodePtr;
-    if(x == NULL)
+    if(x == NULL)// Not found case
     {
         return(NULL);
     }
-    else if(strcmp(x->song, songToBeSearched)==0)
+    else if(strcmp(x->song, songToBeSearched)==0)// Song found
     {
         printf("%s\n", x->song);
         return(x);
@@ -144,6 +145,8 @@ tree_node* predecessorBSTNotInStruct(tree_node* treeNodePtr)
     else
     {
         tree_node* y = treeNodePtr->parent;
+        // we will find the first ancestor of given node such that the given node is present in the left
+        // subtree of that node, which will be the ancestor of required node
         while(y != NULL && treeNodePtr == y->left)
         {
             treeNodePtr = y;
@@ -175,7 +178,7 @@ void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr
         }
         free(treeNodePtr);
     }
-    else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// only right subtree
+    else if(treeNodePtr->left == NULL && treeNodePtr->right != NULL)// only right subtree of node to be deleted
     {
         treeNodePtr->right->parent = treeNodePtr->parent;
 
@@ -190,13 +193,13 @@ void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr
                 treeNodePtr->parent->right = treeNodePtr->right;
             }
         }
-        else
+        else// This is root node itself
         {
             treePtr->root = treeNodePtr->right;
         }
         free(treeNodePtr);
     }
-    else if(treeNodePtr->left != NULL && treeNodePtr->right == NULL)// only left subtree
+    else if(treeNodePtr->left != NULL && treeNodePtr->right == NULL)// only left subtree of node to be deleted
     {
         treeNodePtr->left->parent = treeNodePtr->parent;
 
@@ -211,14 +214,14 @@ void deleteFromBSTNotInStruct(binary_search_tree* treePtr,tree_node* treeNodePtr
                 treeNodePtr->parent->right = treeNodePtr->left;
             }
         }
-        else
+        else// This is root node itself
         {
             treePtr->root = treeNodePtr->left;
         }
 
         free(treeNodePtr);
     }
-    else // Two children
+    else // Two children of node to be deleted
     {
         printf("Inside the else of delete\n");
         tree_node* successorOfNodeToBeDeleted = successorBSTNotInStruct(treeNodePtr);
