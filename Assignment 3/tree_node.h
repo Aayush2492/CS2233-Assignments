@@ -3,12 +3,12 @@
 
 #include <stdbool.h>
 
-#include "linked_list.h"
-
 typedef struct tree_node
 {
     struct tree_node *parent;
-    linkedList *list;
+    char** keys;
+    struct tree_node** children;
+    unsigned numberOfKeys;
     bool isLeaf;
 } tree_node;
 

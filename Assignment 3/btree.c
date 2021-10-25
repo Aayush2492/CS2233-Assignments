@@ -6,7 +6,7 @@ btree* newBtree(unsigned minimumDegree)
 {
     btree* newPtr = (btree*)malloc(sizeof(btree));
 
-    newPtr->minimumDegree = newPtr;
+    newPtr->minimumDegree = minimumDegree;
 
     return newPtr;
 }

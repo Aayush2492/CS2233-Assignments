@@ -5,8 +5,9 @@
 tree_node* newTreeNode()
 {
     tree_node* newNode = (tree_node*)malloc(sizeof(tree_node));
+    // Allocate char**, children
 
     newNode->isLeaf = true;
-    newNode->list = NULL;
     newNode->parent = NULL;
+    newNode->numberOfKeys = 0;
 }
