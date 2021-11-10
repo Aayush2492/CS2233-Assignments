@@ -5,11 +5,12 @@
 
 typedef struct tree_node
 {
-    struct tree_node *parent;
-    char** keys;
+    int* keys;
     struct tree_node** children;
     unsigned numberOfKeys;
+    
     bool isLeaf;
+
 } tree_node;
 
 tree_node *newTreeNode();
