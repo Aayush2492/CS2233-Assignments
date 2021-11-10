@@ -71,7 +71,7 @@ void insertIntoBTreeNotInStruct(btree* treePtr, int keyToBeInserted)
 
         treePtr->root = newRoot;
 
-        splitNode(newRoot, 0);
+        splitNode(treePtr, newRoot, 0);
     }
     else
     {

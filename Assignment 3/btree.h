@@ -8,7 +8,7 @@ typedef struct btree
     struct tree_node *root;
     unsigned minimumDegree;
 
-    void (*insertIntoBTree)(btree*, int);
+    void (*insertIntoBTree)(struct btree*, int);
 } btree;
 
 btree *newBtree(unsigned);

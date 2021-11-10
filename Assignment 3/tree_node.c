@@ -9,4 +9,6 @@ tree_node* newTreeNode()
 
     newNode->isLeaf = true;
     newNode->numberOfKeys = 0;
+
+    return(newNode);
 }
