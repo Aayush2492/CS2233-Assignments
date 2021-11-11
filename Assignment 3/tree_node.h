@@ -12,5 +12,11 @@ typedef struct tree_node
 
 } tree_node;
 
+typedef struct foundStructInfo
+{
+    tree_node* nodeFound;
+    int indexInNode;
+}foundStructInfo;
+
 tree_node *newTreeNode(unsigned);
 #endif

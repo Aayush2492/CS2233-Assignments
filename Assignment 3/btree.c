@@ -11,6 +11,7 @@ btree* newBtree(unsigned minimumDegree)
     newPtr->minimumDegree = minimumDegree;
 
     newPtr->insertIntoBTree = insertIntoBTreeNotInStruct;
+    newPtr->searchBTree = searchBTreeNotInStruct;
 
     return newPtr;
 }
@@ -28,7 +29,6 @@ void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, unsigned index)
     {
         nodeCreated->keys[i] = nodeToSplit->keys[i+minimumDegree];
     }
-    
     // Transferring the children pointers to the node created
     if(!nodeToSplit->isLeaf)
     {
@@ -42,8 +42,7 @@ void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, unsigned index)
     nodeToSplit->numberOfKeys = treePtr->minimumDegree-1;
 
     // median value of nodeToSplit has to be promoted to the index of its parent
-
-    for(int i = parentOfNodeToSplit->numberOfKeys; i>= index; i--)
+    for(int i = parentOfNodeToSplit->numberOfKeys; i>= (int)index; i--)
     {
         if(i != parentOfNodeToSplit->numberOfKeys)
         {
@@ -55,6 +54,7 @@ void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, unsigned index)
             parentOfNodeToSplit->children[i+1] = parentOfNodeToSplit->children[i];
         }
     }
+
     parentOfNodeToSplit->keys[index] = nodeToSplit->keys[minimumDegree-1];
     parentOfNodeToSplit->children[index+1] = nodeCreated;
     parentOfNodeToSplit->numberOfKeys++;
@@ -66,9 +66,7 @@ void insertIntoBTreeNotInStruct(btree* treePtr, int keyToBeInserted)
 
     if(root == NULL)// insert called first time
     {
-        printf("Called first time\n");
         root = newTreeNode(treePtr->minimumDegree);
-        printf("Root node created\n");
         treePtr->root = root;
         
         root->keys[0] = keyToBeInserted;
@@ -78,7 +76,6 @@ void insertIntoBTreeNotInStruct(btree* treePtr, int keyToBeInserted)
 
     if(root->numberOfKeys == 2*treePtr->minimumDegree -1)
     {
-        printf("Root is full\n");
         tree_node* newRoot = newTreeNode(treePtr->minimumDegree);
         newRoot->isLeaf = false;
         newRoot->numberOfKeys = 0;
@@ -91,7 +88,6 @@ void insertIntoBTreeNotInStruct(btree* treePtr, int keyToBeInserted)
     }
     else
     {
-        printf("Root is not full\n");
         insertIntoNonFullRoot(treePtr, root, keyToBeInserted);
     }
 }
@@ -100,7 +96,6 @@ void insertIntoNonFullRoot(btree* treePtr, tree_node* treeNodePtr, int keyToBeIn
 {
     if(treeNodePtr->isLeaf)
     {
-        printf("Is leaf\n");
         int i=0;
         for(i=0; i<treeNodePtr->numberOfKeys; i++)
         {
@@ -132,11 +127,10 @@ void insertIntoNonFullRoot(btree* treePtr, tree_node* treeNodePtr, int keyToBeIn
         if(treeNodePtr->children[i]->numberOfKeys == 2*treePtr->minimumDegree-1)
         {
             splitNode(treePtr, treeNodePtr, i);
-        }
-
-        if(keyToBeInserted > treeNodePtr->keys[i])
-        {
-            i++;
+            if(keyToBeInserted > treeNodePtr->keys[i])
+            {
+                i++;
+            }
         }
 
         insertIntoNonFullRoot(treePtr, treeNodePtr->children[i], keyToBeInserted);
@@ -144,3 +138,32 @@ void insertIntoNonFullRoot(btree* treePtr, tree_node* treeNodePtr, int keyToBeIn
     }
 }
 
+foundStructInfo* searchBTreeNotInStruct(tree_node* treeNodePtr, int keyToBeSearched)
+{
+    int i=0;
+    for(i=0;i<treeNodePtr->numberOfKeys; i++)
+    {
+        if(treeNodePtr->keys[i] == keyToBeSearched)
+        {
+            foundStructInfo* aboutFoundElement = (foundStructInfo*)malloc(sizeof(foundStructInfo));
+            aboutFoundElement->nodeFound = treeNodePtr;
+            aboutFoundElement->indexInNode = i;
+            return(aboutFoundElement);
+        }
+        if(treeNodePtr->keys[i] > keyToBeSearched)
+        {
+            if(treeNodePtr->isLeaf)
+            {
+                return(NULL);
+            }
+            return(searchBTreeNotInStruct(treeNodePtr->children[i], keyToBeSearched));
+        }
+
+    }
+
+    if(treeNodePtr->isLeaf)
+    {
+        return(NULL);
+    }
+    return(searchBTreeNotInStruct(treeNodePtr->children[i], keyToBeSearched));
+}
