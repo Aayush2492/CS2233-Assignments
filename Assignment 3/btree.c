@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #include "btree.h"
@@ -16,7 +17,7 @@ btree* newBtree(unsigned minimumDegree)
 
 void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, unsigned index)
 {
-    tree_node* nodeCreated = newTreeNode();
+    tree_node* nodeCreated = newTreeNode(treePtr->minimumDegree);
     tree_node* nodeToSplit = parentOfNodeToSplit->children[index];
     nodeCreated->isLeaf = nodeToSplit->isLeaf;
     
@@ -62,9 +63,23 @@ void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, unsigned index)
 void insertIntoBTreeNotInStruct(btree* treePtr, int keyToBeInserted)
 {
     tree_node* root = treePtr->root;
+
+    if(root == NULL)// insert called first time
+    {
+        printf("Called first time\n");
+        root = newTreeNode(treePtr->minimumDegree);
+        printf("Root node created\n");
+        treePtr->root = root;
+        
+        root->keys[0] = keyToBeInserted;
+        root->numberOfKeys++;
+        return;
+    }
+
     if(root->numberOfKeys == 2*treePtr->minimumDegree -1)
     {
-        tree_node* newRoot = newTreeNode();
+        printf("Root is full\n");
+        tree_node* newRoot = newTreeNode(treePtr->minimumDegree);
         newRoot->isLeaf = false;
         newRoot->numberOfKeys = 0;
         newRoot->children[0] = root;
@@ -72,10 +87,12 @@ void insertIntoBTreeNotInStruct(btree* treePtr, int keyToBeInserted)
         treePtr->root = newRoot;
 
         splitNode(treePtr, newRoot, 0);
+        insertIntoNonFullRoot(treePtr, newRoot, keyToBeInserted);
     }
     else
     {
-
+        printf("Root is not full\n");
+        insertIntoNonFullRoot(treePtr, root, keyToBeInserted);
     }
 }
 
@@ -83,6 +100,7 @@ void insertIntoNonFullRoot(btree* treePtr, tree_node* treeNodePtr, int keyToBeIn
 {
     if(treeNodePtr->isLeaf)
     {
+        printf("Is leaf\n");
         int i=0;
         for(i=0; i<treeNodePtr->numberOfKeys; i++)
         {
@@ -92,7 +110,7 @@ void insertIntoNonFullRoot(btree* treePtr, tree_node* treeNodePtr, int keyToBeIn
             }
         }
 
-        for(int j = i; j<treeNodePtr->numberOfKeys-1; j++)
+        for(int j = treeNodePtr->numberOfKeys-1; j>=i; j--)
         {
             treeNodePtr->keys[j+1] = treeNodePtr->keys[j];
         }
