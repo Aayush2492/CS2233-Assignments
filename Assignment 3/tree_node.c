@@ -2,7 +2,7 @@
 
 #include "tree_node.h"
 
-tree_node* newTreeNode(unsigned minimumDegree)
+tree_node* newTreeNode(int minimumDegree)
 {
     tree_node* newNode = (tree_node*)malloc(sizeof(tree_node));
     // Allocate int**, children

@@ -4,7 +4,7 @@
 
 #include "btree.h"
 
-btree* newBtree(unsigned minimumDegree)
+btree* newBtree(int minimumDegree)
 {
     btree* newPtr = (btree*)malloc(sizeof(btree));
 
@@ -12,17 +12,18 @@ btree* newBtree(unsigned minimumDegree)
 
     newPtr->insertIntoBTree = insertIntoBTreeNotInStruct;
     newPtr->searchBTree = searchBTreeNotInStruct;
+    newPtr->deleteFromBTree = deleteFromBTreeNotInStruct;
 
     return newPtr;
 }
 
-void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, unsigned index)
+void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, int index)
 {
     tree_node* nodeCreated = newTreeNode(treePtr->minimumDegree);
     tree_node* nodeToSplit = parentOfNodeToSplit->children[index];
     nodeCreated->isLeaf = nodeToSplit->isLeaf;
     
-    unsigned minimumDegree = treePtr->minimumDegree;
+    int minimumDegree = treePtr->minimumDegree;
 
     // Transferring half the array elements to the new node
     for(int i = 0; i<=minimumDegree-2; i++)
@@ -42,7 +43,7 @@ void splitNode(btree* treePtr, tree_node* parentOfNodeToSplit, unsigned index)
     nodeToSplit->numberOfKeys = treePtr->minimumDegree-1;
 
     // median value of nodeToSplit has to be promoted to the index of its parent
-    for(int i = parentOfNodeToSplit->numberOfKeys; i>= (int)index; i--)
+    for(int i = parentOfNodeToSplit->numberOfKeys; i>= index; i--)
     {
         if(i != parentOfNodeToSplit->numberOfKeys)
         {
@@ -141,7 +142,7 @@ void insertIntoNonFullRoot(btree* treePtr, tree_node* treeNodePtr, int keyToBeIn
 foundStructInfo* searchBTreeNotInStruct(tree_node* treeNodePtr, int keyToBeSearched)
 {
     int i=0;
-    for(i=0;i<treeNodePtr->numberOfKeys; i++)
+    for(i=0; i<treeNodePtr->numberOfKeys; i++)
     {
         if(treeNodePtr->keys[i] == keyToBeSearched)
         {
@@ -166,4 +167,210 @@ foundStructInfo* searchBTreeNotInStruct(tree_node* treeNodePtr, int keyToBeSearc
         return(NULL);
     }
     return(searchBTreeNotInStruct(treeNodePtr->children[i], keyToBeSearched));
+}
+
+// This function assumes that the key exists in the btree rooted at treeNodePtr
+void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_node* nodeContainingKey, int indexOfKeyToBeDeleted)
+{
+    if(treeNodePtr->isLeaf)
+    {
+        for(int i=indexOfKeyToBeDeleted; i<treeNodePtr->numberOfKeys-1; i++)
+        {
+            treeNodePtr->keys[i] = treeNodePtr->keys[i+1];
+        }
+        treeNodePtr->numberOfKeys--;
+    }
+    else if(treeNodePtr == nodeContainingKey)
+    {
+        // key is present in an internal node
+        if(treeNodePtr->children[indexOfKeyToBeDeleted]->numberOfKeys >= treePtr->minimumDegree)
+        {
+            tree_node* predecessor = predecessorBTree(treeNodePtr->children[indexOfKeyToBeDeleted]);
+            int predecessorIndex = predecessor->numberOfKeys-1;
+            int predecessorKey = predecessor->keys[predecessorIndex];
+            treePtr->deleteFromBTree(treePtr, predecessor, predecessor, predecessorIndex);
+            treeNodePtr->keys[indexOfKeyToBeDeleted] = predecessorKey;
+            treeNodePtr->numberOfKeys--;
+            
+        }
+        else if(treeNodePtr->children[indexOfKeyToBeDeleted+1]->numberOfKeys >= treePtr->minimumDegree)
+        {
+            tree_node* successor = successorBTree(treeNodePtr->children[indexOfKeyToBeDeleted+1]);
+            int successorKey = successor->keys[0];
+            treePtr->deleteFromBTree(treePtr, successor, successor, 0);
+            treeNodePtr->keys[indexOfKeyToBeDeleted] = successorKey;
+            treeNodePtr->numberOfKeys--;
+        }
+        else
+        {
+            tree_node* leftChild = treeNodePtr->children[indexOfKeyToBeDeleted];
+            tree_node* rightChild = treeNodePtr->children[indexOfKeyToBeDeleted+1];
+
+            leftChild->keys[treePtr->minimumDegree-1] = treeNodePtr->keys[indexOfKeyToBeDeleted];
+            treeNodePtr->numberOfKeys--;
+            leftChild->numberOfKeys++;
+
+            for(int i=0; i<treePtr->minimumDegree; i++)
+            {
+                if(i != treePtr->minimumDegree-1)
+                {
+                    leftChild->keys[treePtr->minimumDegree + i] = rightChild->keys[i];
+                    leftChild->numberOfKeys++;
+                    rightChild->numberOfKeys--;
+                }
+                leftChild->children[treePtr->minimumDegree + i] = rightChild->children[i];
+            }
+
+            free(rightChild);
+            treePtr->deleteFromBTree(treePtr, leftChild, leftChild, treePtr->minimumDegree-1);
+        }
+    }
+    else
+    {
+        // key is not present in the internal node
+        int keyToBeDeleted = nodeContainingKey->keys[indexOfKeyToBeDeleted];
+        int i=0;
+        for(i=0; i<treeNodePtr->numberOfKeys; i++)
+        {
+            if(treeNodePtr->keys[i] > keyToBeDeleted)
+            {
+                break;
+            }
+        }
+
+        if(treeNodePtr->children[i]->numberOfKeys >= treePtr->minimumDegree)
+        {
+            // The child has >= t keys
+            treePtr->deleteFromBTree(treePtr, treeNodePtr->children[i], nodeContainingKey, indexOfKeyToBeDeleted);
+        }
+        else// The child has only t-1 keys
+        {
+            checkInRightSibling(treePtr, treeNodePtr, i);
+        }
+    }
+}
+
+tree_node* predecessorBTree(tree_node* treeNodePtr)
+{
+    if(treeNodePtr->isLeaf)
+    {
+        return(treeNodePtr);
+    }
+
+    return(predecessorBTree(treeNodePtr->children[treeNodePtr->numberOfKeys]));
+}
+
+tree_node* successorBTree(tree_node* treeNodePtr)
+{
+    if(treeNodePtr->isLeaf)
+    {
+        return(treeNodePtr);
+    }
+
+    return(successorBTree(treeNodePtr->children[0]));
+}
+
+void checkInRightSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+{
+    if(index == treeNodePtr->numberOfKeys-1)
+    {
+        // No right sibling exists
+        checkInLeftSibling(treePtr, treeNodePtr, index);
+        return;
+    }
+    else
+    {
+        if(treeNodePtr->children[index+1]->numberOfKeys >= treePtr->minimumDegree)
+        {
+            borrowFromRightSibling(treePtr, treeNodePtr, index);
+            return;
+        }
+        else
+        {
+            checkInLeftSibling(treePtr, treeNodePtr, index);
+            return;
+        }
+    }
+}
+
+void checkInLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+{
+    if(index == 0)
+    {
+        // No left sibling exists
+        // right sibling has lesser <=t-1 keys
+        // Merge with right
+        return;
+    }
+    else
+    {
+        if(treeNodePtr->children[index-1]->numberOfKeys >= treePtr->minimumDegree)
+        {
+            // Left sibling has >= t keys
+            borrowFromLeftSibling(treePtr, treeNodePtr, index);
+            return;
+        }
+        else
+        {
+            // Merge with right
+            return;
+        }
+    }
+}
+
+void borrowFromRightSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+{
+    tree_node* child = treeNodePtr->children[index];
+    tree_node* rightSibling = treeNodePtr->children[index+1];
+
+    //Moving the key from parent to child node
+    child->keys[child->numberOfKeys] = treeNodePtr->keys[index];
+
+    //Moving the key from right sibling to parent
+    treeNodePtr->keys[index] = rightSibling->keys[0];
+
+    //Moving the child pointer from right sibling
+    child->children[child->numberOfKeys+1] = rightSibling->children[0];
+
+    // Shifting keys to the left in rightSibling
+    for(int i=0; i<= rightSibling->numberOfKeys-1 ;i++)
+    {
+        rightSibling->children[i] = rightSibling->children[i+1];
+
+        if(i != rightSibling->numberOfKeys-1)
+            rightSibling->keys[i] = rightSibling->keys[i+1];
+    }
+
+    child->numberOfKeys++;
+    rightSibling->numberOfKeys--;
+}
+
+void borrowFromLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+{
+    tree_node* child = treeNodePtr->children[index];
+    tree_node* leftSibling = treeNodePtr->children[index-1];
+
+    //Moving the key from parent to child node
+    for(int i=child->numberOfKeys; i>=0; i++)
+    {
+        if(i != child->numberOfKeys)
+            child->keys[i+1] = child->keys[i];
+        
+        child->children[i+1] = child->children[i];
+    }
+    child->keys[0] = treeNodePtr->keys[index];
+
+    //Moving the child pointer from left sibling
+    child->children[0] = leftSibling->children[leftSibling->numberOfKeys];
+
+    //Moving the key from left sibling to parent
+    treeNodePtr->keys[index] = leftSibling->keys[leftSibling->numberOfKeys-1];
+
+    child->numberOfKeys++;
+    leftSibling->numberOfKeys--;
+}
+
+void mergeWithRightSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+{
+    
 }

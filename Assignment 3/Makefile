@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -c -Wall
-OBJS = btree.o tree_node.o main.o
+CFLAGS = -c -Wall -g
+OBJS = file_reader.o btree.o tree_node.o main.o
 TARGET = exec
 
 all: MAIN
@@ -16,6 +16,9 @@ tree_node.o: tree_node.c
 
 btree.o: btree.c
 		$(CC) $(CFLAGS) btree.c
+
+file_reader.o: file_reader.c
+		$(CC) $(CFLAGS) file_reader.c
 
 clean:
 		rm -rf $(OBJS) $(TARGET) *~

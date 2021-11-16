@@ -7,7 +7,7 @@ typedef struct tree_node
 {
     int* keys;
     struct tree_node** children;
-    unsigned numberOfKeys;
+    int numberOfKeys;
     bool isLeaf;
 
 } tree_node;
@@ -18,5 +18,5 @@ typedef struct foundStructInfo
     int indexInNode;
 }foundStructInfo;
 
-tree_node *newTreeNode(unsigned);
+tree_node *newTreeNode(int);
 #endif
