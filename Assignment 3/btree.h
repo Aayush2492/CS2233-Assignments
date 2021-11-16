@@ -26,6 +26,6 @@ void borrowFromRightSibling(btree*, tree_node*, int);
 void borrowFromLeftSibling(btree*, tree_node*, int);
 void checkInRightSibling(btree*, tree_node*, int);
 void checkInLeftSibling(btree*, tree_node*, int);
-void mergeWithRightSibling(btree* , tree_node* , int);
+void mergeWNodes(btree* , tree_node* , int);
 
 #endif

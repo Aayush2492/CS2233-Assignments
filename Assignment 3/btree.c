@@ -203,25 +203,8 @@ void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_nod
         }
         else
         {
+            mergeNodes(treePtr, treeNodePtr, indexOfKeyToBeDeleted);
             tree_node* leftChild = treeNodePtr->children[indexOfKeyToBeDeleted];
-            tree_node* rightChild = treeNodePtr->children[indexOfKeyToBeDeleted+1];
-
-            leftChild->keys[treePtr->minimumDegree-1] = treeNodePtr->keys[indexOfKeyToBeDeleted];
-            treeNodePtr->numberOfKeys--;
-            leftChild->numberOfKeys++;
-
-            for(int i=0; i<treePtr->minimumDegree; i++)
-            {
-                if(i != treePtr->minimumDegree-1)
-                {
-                    leftChild->keys[treePtr->minimumDegree + i] = rightChild->keys[i];
-                    leftChild->numberOfKeys++;
-                    rightChild->numberOfKeys--;
-                }
-                leftChild->children[treePtr->minimumDegree + i] = rightChild->children[i];
-            }
-
-            free(rightChild);
             treePtr->deleteFromBTree(treePtr, leftChild, leftChild, treePtr->minimumDegree-1);
         }
     }
@@ -300,6 +283,7 @@ void checkInLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
         // No left sibling exists
         // right sibling has lesser <=t-1 keys
         // Merge with right
+        mergeNodes(treePtr, treeNodePtr, index);
         return;
     }
     else
@@ -312,7 +296,8 @@ void checkInLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
         }
         else
         {
-            // Merge with right
+            // Merge with 
+            mergeNodes(treePtr, treeNodePtr, index-1);
             return;
         }
     }
@@ -351,7 +336,7 @@ void borrowFromLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
     tree_node* leftSibling = treeNodePtr->children[index-1];
 
     //Moving the key from parent to child node
-    for(int i=child->numberOfKeys; i>=0; i++)
+    for(int i=child->numberOfKeys; i>=0; i--)
     {
         if(i != child->numberOfKeys)
             child->keys[i+1] = child->keys[i];
@@ -370,7 +355,41 @@ void borrowFromLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
     leftSibling->numberOfKeys--;
 }
 
-void mergeWithRightSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+// Merging children nodes of treeNodePtr at index, index+1
+void mergeNodes(btree* treePtr, tree_node* treeNodePtr, int index)
 {
-    
+    tree_node* leftChild = treeNodePtr->children[index];
+    tree_node* rightChild = treeNodePtr->children[index+1];
+
+    // Left child gets the key from parent
+    leftChild->keys[treePtr->minimumDegree-1] = treeNodePtr->keys[index];
+    leftChild->numberOfKeys++;
+
+    // Moving the keys and children pointers from right to left child
+    for(int i=0; i<treePtr->minimumDegree; i++)
+    {
+        if(i != treePtr->minimumDegree-1)
+        {
+            leftChild->keys[treePtr->minimumDegree + i] = rightChild->keys[i];
+            leftChild->numberOfKeys++;
+            rightChild->numberOfKeys--;
+        }
+        leftChild->children[treePtr->minimumDegree + i] = rightChild->children[i];
+    }
+
+    // Shifting keys ans child in parent
+    for(int i=index; i<=treeNodePtr->numberOfKeys-1; i++)
+    {
+        if(i != treeNodePtr->numberOfKeys-1)
+        {
+            treeNodePtr->keys[i] = treeNodePtr->keys[i+1];
+        }
+
+        if(i != index)
+        {
+            treeNodePtr->children[i] = treeNodePtr->children[i+1];
+        }
+    }
+    treeNodePtr->numberOfKeys--;
+    free(rightChild);
 }

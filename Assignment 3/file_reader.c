@@ -5,12 +5,12 @@
 #include "file_reader.h"
 #include "tree_node.h"
 
-void readFile(btree* treePtr, int flag)
+void readFile(char* fileName, btree* treePtr, int flag)
 {
     char *lineptr = NULL;
     size_t len;
     size_t read;
-    FILE* fp = fopen("input2.txt", "r");
+    FILE* fp = fopen(fileName, "r");
     if (fp == NULL)
     {
         printf("Error opening file!\n");
