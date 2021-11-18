@@ -174,6 +174,7 @@ void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_nod
 {
     if(treeNodePtr->isLeaf)
     {
+        printf("Case 3: Node is leaf\n");
         for(int i=indexOfKeyToBeDeleted; i<treeNodePtr->numberOfKeys-1; i++)
         {
             treeNodePtr->keys[i] = treeNodePtr->keys[i+1];
@@ -183,6 +184,7 @@ void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_nod
     else if(treeNodePtr == nodeContainingKey)
     {
         // key is present in an internal node
+        printf("Case 2: key is present in an internal node\n");
         if(treeNodePtr->children[indexOfKeyToBeDeleted]->numberOfKeys >= treePtr->minimumDegree)
         {
             tree_node* predecessor = predecessorBTree(treeNodePtr->children[indexOfKeyToBeDeleted]);
@@ -210,9 +212,11 @@ void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_nod
     }
     else
     {
+        printf("Case 3\n");
         // key is not present in the internal node
         int keyToBeDeleted = nodeContainingKey->keys[indexOfKeyToBeDeleted];
-        int i=0;
+        int i=0;// Index of apt child subtree
+        printf("%d\n", treeNodePtr->numberOfKeys);
         for(i=0; i<treeNodePtr->numberOfKeys; i++)
         {
             if(treeNodePtr->keys[i] > keyToBeDeleted)
@@ -220,15 +224,23 @@ void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_nod
                 break;
             }
         }
-
+        printf("Case 3, %d\n", i);
         if(treeNodePtr->children[i]->numberOfKeys >= treePtr->minimumDegree)
         {
             // The child has >= t keys
+            printf("Case 3-0\n");
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[i], nodeContainingKey, indexOfKeyToBeDeleted);
         }
         else// The child has only t-1 keys
         {
-            checkInRightSibling(treePtr, treeNodePtr, i);
+            printf("Case 3-1\n");
+            int flag=0;
+            // flag will be set to 1 if merging with right sibling happens
+            // flag will be set to -1 if merging with left sibling happens
+            // flag will stay 0 if only borrowing i.e. no merging happens
+            
+            checkInRightSibling(treePtr, treeNodePtr, i, &flag);
+            treePtr->deleteFromBTree(treePtr, treeNodePtr->children[i+flag], nodeContainingKey, indexOfKeyToBeDeleted);
         }
     }
 }
@@ -253,12 +265,13 @@ tree_node* successorBTree(tree_node* treeNodePtr)
     return(successorBTree(treeNodePtr->children[0]));
 }
 
-void checkInRightSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+void checkInRightSibling(btree* treePtr, tree_node* treeNodePtr, int index, int* flagPtr)
 {
-    if(index == treeNodePtr->numberOfKeys-1)
+    if(index == treeNodePtr->numberOfKeys)
     {
         // No right sibling exists
-        checkInLeftSibling(treePtr, treeNodePtr, index);
+        printf("Case 3: No right sibling\n");
+        checkInLeftSibling(treePtr, treeNodePtr, index, flagPtr);
         return;
     }
     else
@@ -270,13 +283,13 @@ void checkInRightSibling(btree* treePtr, tree_node* treeNodePtr, int index)
         }
         else
         {
-            checkInLeftSibling(treePtr, treeNodePtr, index);
+            checkInLeftSibling(treePtr, treeNodePtr, index, flagPtr);
             return;
         }
     }
 }
 
-void checkInLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
+void checkInLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index, int* flagPtr)
 {
     if(index == 0)
     {
@@ -284,20 +297,25 @@ void checkInLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
         // right sibling has lesser <=t-1 keys
         // Merge with right
         mergeNodes(treePtr, treeNodePtr, index);
+        *flagPtr = 1;
         return;
     }
     else
     {
+        printf("Case 3: Left sibling exists\n");
         if(treeNodePtr->children[index-1]->numberOfKeys >= treePtr->minimumDegree)
         {
             // Left sibling has >= t keys
+            printf("Case 3: Left sibling has >= t keys\n");
             borrowFromLeftSibling(treePtr, treeNodePtr, index);
             return;
         }
         else
         {
-            // Merge with 
+            // Merge with left
+            printf("Left sibling has < t nodes\n");
             mergeNodes(treePtr, treeNodePtr, index-1);
+            *flagPtr=-1;
             return;
         }
     }
@@ -335,7 +353,7 @@ void borrowFromLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
     tree_node* child = treeNodePtr->children[index];
     tree_node* leftSibling = treeNodePtr->children[index-1];
 
-    //Moving the key from parent to child node
+    // Moving the key from parent to child node
     for(int i=child->numberOfKeys; i>=0; i--)
     {
         if(i != child->numberOfKeys)
@@ -343,16 +361,17 @@ void borrowFromLeftSibling(btree* treePtr, tree_node* treeNodePtr, int index)
         
         child->children[i+1] = child->children[i];
     }
-    child->keys[0] = treeNodePtr->keys[index];
+    child->keys[0] = treeNodePtr->keys[index-1];
 
     //Moving the child pointer from left sibling
     child->children[0] = leftSibling->children[leftSibling->numberOfKeys];
 
     //Moving the key from left sibling to parent
-    treeNodePtr->keys[index] = leftSibling->keys[leftSibling->numberOfKeys-1];
+    treeNodePtr->keys[index-1] = leftSibling->keys[leftSibling->numberOfKeys-1];
 
     child->numberOfKeys++;
     leftSibling->numberOfKeys--;
+    traverseBTree(treePtr->root);
 }
 
 // Merging children nodes of treeNodePtr at index, index+1
@@ -366,7 +385,7 @@ void mergeNodes(btree* treePtr, tree_node* treeNodePtr, int index)
     leftChild->numberOfKeys++;
 
     // Moving the keys and children pointers from right to left child
-    for(int i=0; i<treePtr->minimumDegree; i++)
+    for(int i=0; i<=treePtr->minimumDegree-1; i++)
     {
         if(i != treePtr->minimumDegree-1)
         {
@@ -377,7 +396,7 @@ void mergeNodes(btree* treePtr, tree_node* treeNodePtr, int index)
         leftChild->children[treePtr->minimumDegree + i] = rightChild->children[i];
     }
 
-    // Shifting keys ans child in parent
+    // Shifting keys and children pointers in parent
     for(int i=index; i<=treeNodePtr->numberOfKeys-1; i++)
     {
         if(i != treeNodePtr->numberOfKeys-1)
@@ -392,4 +411,26 @@ void mergeNodes(btree* treePtr, tree_node* treeNodePtr, int index)
     }
     treeNodePtr->numberOfKeys--;
     free(rightChild);
+    traverseBTree(treePtr->root);
+}
+
+void traverseBTree(tree_node* treeNodePtr)
+{
+    if(treeNodePtr == NULL)
+    {
+        return;
+    }
+
+    printf("Node: ");
+    for(int i=0; i<treeNodePtr->numberOfKeys; i++)
+    {
+        printf("%d ", treeNodePtr->keys[i]);
+    }
+    printf("\n");
+
+    for(int i=0; i<= treeNodePtr->numberOfKeys; i++)
+    {
+        traverseBTree(treeNodePtr->children[i]);
+    }
+
 }
