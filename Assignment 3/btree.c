@@ -190,24 +190,22 @@ void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_nod
             tree_node* predecessor = predecessorBTree(treeNodePtr->children[indexOfKeyToBeDeleted]);
             int predecessorIndex = predecessor->numberOfKeys-1;
             int predecessorKey = predecessor->keys[predecessorIndex];
-            treePtr->deleteFromBTree(treePtr, predecessor, predecessor, predecessorIndex);
+            treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted], predecessor, predecessorIndex);
             treeNodePtr->keys[indexOfKeyToBeDeleted] = predecessorKey;
-            treeNodePtr->numberOfKeys--;
-            
+            //treeNodePtr->numberOfKeys--;
         }
         else if(treeNodePtr->children[indexOfKeyToBeDeleted+1]->numberOfKeys >= treePtr->minimumDegree)
         {
             tree_node* successor = successorBTree(treeNodePtr->children[indexOfKeyToBeDeleted+1]);
             int successorKey = successor->keys[0];
-            treePtr->deleteFromBTree(treePtr, successor, successor, 0);
+            treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted+1], successor, 0);
             treeNodePtr->keys[indexOfKeyToBeDeleted] = successorKey;
-            treeNodePtr->numberOfKeys--;
+            //treeNodePtr->numberOfKeys--;
         }
         else
         {
             mergeNodes(treePtr, treeNodePtr, indexOfKeyToBeDeleted);
-            tree_node* leftChild = treeNodePtr->children[indexOfKeyToBeDeleted];
-            treePtr->deleteFromBTree(treePtr, leftChild, leftChild, treePtr->minimumDegree-1);
+            treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted], treeNodePtr->children[indexOfKeyToBeDeleted], treePtr->minimumDegree-1);
         }
     }
     else
@@ -240,6 +238,10 @@ void deleteFromBTreeNotInStruct(btree* treePtr, tree_node* treeNodePtr, tree_nod
             // flag will stay 0 if only borrowing i.e. no merging happens
             
             checkInRightSibling(treePtr, treeNodePtr, i, &flag);
+
+            foundStructInfo* node = treePtr->searchBTree(treeNodePtr->children[i+flag], nodeContainingKey->keys[indexOfKeyToBeDeleted]);
+            nodeContainingKey = node->nodeFound;
+            indexOfKeyToBeDeleted = node->indexInNode;
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[i+flag], nodeContainingKey, indexOfKeyToBeDeleted);
         }
     }
