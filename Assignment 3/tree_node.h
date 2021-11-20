@@ -5,18 +5,19 @@
 
 typedef struct tree_node
 {
-    int* keys;
-    struct tree_node** children;
+    int *keys;
+    struct tree_node **children;
     int numberOfKeys;
     bool isLeaf;
+    int row, column; // Coordinates in secondary memory
 
 } tree_node;
 
 typedef struct foundStructInfo
 {
-    tree_node* nodeFound;
+    tree_node *nodeFound;
     int indexInNode;
-}foundStructInfo;
+} foundStructInfo;
 
 tree_node *newTreeNode(int);
 #endif
