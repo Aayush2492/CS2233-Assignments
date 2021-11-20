@@ -3,35 +3,34 @@
 #include "btree.h"
 #include "file_reader.h"
 
-void traverseBTree(tree_node* treeNodePtr)
+void deleteByKey(btree *treePtr, int key)
 {
-    if(treeNodePtr == NULL)
+    foundStructInfo *node = treePtr->searchBTree(treePtr->root, key);
+    if (node == NULL)
     {
-        return;
+        printf("Not Found\n");
     }
-
-    printf("Node: ");
-    for(int i=0; i<treeNodePtr->numberOfKeys; i++)
+    else
     {
-        printf("%d ", treeNodePtr->keys[i]);
+        printf("Found: %d\n", node->indexInNode);
+        treePtr->deleteFromBTree(treePtr, treePtr->root, node->nodeFound, node->indexInNode);
     }
-    printf("\n");
-
-    for(int i=0; i<= treeNodePtr->numberOfKeys; i++)
-    {
-        traverseBTree(treeNodePtr->children[i]);
-    }
-
 }
 int main()
 {
-    btree* treePtr = newBtree(3);
+    char fileName[] = "input.txt";
+    btree *treePtr = newBtree(2);
 
-    readFile(treePtr, 1);
+    readFile(fileName, treePtr);
 
     traverseBTree(treePtr->root);
 
-    readFile(treePtr, 0);
+    deleteByKey(treePtr, 60);
+    deleteByKey(treePtr, 44);
+    deleteByKey(treePtr, 32);
+    deleteByKey(treePtr, 38);
+    deleteByKey(treePtr, 17);
+    traverseBTree(treePtr->root);
 
     return 0;
 }
