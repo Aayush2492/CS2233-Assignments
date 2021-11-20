@@ -169,6 +169,7 @@ foundStructInfo *searchBTreeNotInStruct(tree_node *treeNodePtr, int keyToBeSearc
 // This function assumes that the key exists in the btree rooted at treeNodePtr
 void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_node *nodeContainingKey, int indexOfKeyToBeDeleted)
 {
+    int keyToBeDeleted = nodeContainingKey->keys[indexOfKeyToBeDeleted];
     if (treeNodePtr->isLeaf)
     {
         printf("Case 3: Node is leaf\n");
@@ -181,9 +182,10 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
     else if (treeNodePtr == nodeContainingKey)
     {
         // key is present in an internal node
-        printf("Case 2: key is present in an internal node\n");
+        printf("Case 2: key is present in an internal node %d\n", indexOfKeyToBeDeleted);
         if (treeNodePtr->children[indexOfKeyToBeDeleted]->numberOfKeys >= treePtr->minimumDegree)
         {
+            printf("Case 2: Predecessor has enough keys\n");
             tree_node *predecessor = predecessorBTree(treeNodePtr->children[indexOfKeyToBeDeleted]);
             int predecessorIndex = predecessor->numberOfKeys - 1;
             int predecessorKey = predecessor->keys[predecessorIndex];
@@ -193,6 +195,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
         }
         else if (treeNodePtr->children[indexOfKeyToBeDeleted + 1]->numberOfKeys >= treePtr->minimumDegree)
         {
+            printf("Case 2: Successor has enough keys\n");
             tree_node *successor = successorBTree(treeNodePtr->children[indexOfKeyToBeDeleted + 1]);
             int successorKey = successor->keys[0];
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted + 1], successor, 0);
@@ -207,11 +210,9 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
     }
     else
     {
-        printf("Case 3\n");
         // key is not present in the internal node
         int keyToBeDeleted = nodeContainingKey->keys[indexOfKeyToBeDeleted];
         int i = 0; // Index of apt child subtree
-        printf("%d\n", treeNodePtr->numberOfKeys);
         for (i = 0; i < treeNodePtr->numberOfKeys; i++)
         {
             if (treeNodePtr->keys[i] > keyToBeDeleted)
@@ -235,8 +236,8 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
             // flag will stay 0 if only borrowing i.e. no merging happens
 
             checkInRightSibling(treePtr, treeNodePtr, i, &flag);
-
-            foundStructInfo *node = treePtr->searchBTree(treeNodePtr->children[i + flag], nodeContainingKey->keys[indexOfKeyToBeDeleted]);
+            printf("Flag: %d\n", flag);
+            foundStructInfo *node = treePtr->searchBTree(treeNodePtr->children[i + flag], keyToBeDeleted);
             nodeContainingKey = node->nodeFound;
             indexOfKeyToBeDeleted = node->indexInNode;
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[i + flag], nodeContainingKey, indexOfKeyToBeDeleted);
