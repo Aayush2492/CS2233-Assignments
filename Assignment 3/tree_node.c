@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "tree_node.h"
+#include "disk_simulation.h"
 
 tree_node *newTreeNode(int minimumDegree)
 {
@@ -10,6 +11,7 @@ tree_node *newTreeNode(int minimumDegree)
     newNode->numberOfKeys = 0;
     newNode->keys = (int *)malloc(sizeof(int) * (2 * minimumDegree - 1));
     newNode->children = (tree_node **)malloc(sizeof(tree_node *) * (2 * minimumDegree));
+    allocateNodeBTree(newNode);
 
     return (newNode);
 }

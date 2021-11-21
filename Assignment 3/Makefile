@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -c -Wall -g
-OBJS = file_reader.o btree.o tree_node.o main.o
+OBJS = main.o binary_search_tree.o btree.o file_reader.o tree_node.o bst_node.o disk_simulation.o helpful_functions.o
 TARGET = exec
 
 all: MAIN
@@ -17,8 +17,20 @@ tree_node.o: tree_node.c
 btree.o: btree.c
 		$(CC) $(CFLAGS) btree.c
 
+disk_simulation.o: disk_simulation.c
+		$(CC) $(CFLAGS) disk_simulation.c
+
+helpful_functions.o: helpful_functions.c
+		$(CC) $(CFLAGS) helpful_functions.c
+
+bst_node.o: bst_node.c
+		$(CC) $(CFLAGS) bst_node.c
+
 file_reader.o: file_reader.c
 		$(CC) $(CFLAGS) file_reader.c
+
+binary_search_tree.o: binary_search_tree.c
+		$(CC) $(CFLAGS) binary_search_tree.c
 
 clean:
 		rm -rf $(OBJS) $(TARGET) *~

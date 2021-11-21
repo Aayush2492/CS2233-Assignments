@@ -68,7 +68,7 @@ void inorderTraversalNotInStruct(bst_node *treeNodePtr)
     }
 
     inorderTraversalNotInStruct(treeNodePtr->left);
-    printf("%s: %d\n", treeNodePtr->song, getHeightOfNode(treeNodePtr));
+    printf("%d: %d\n", treeNodePtr->song, getHeightOfNode(treeNodePtr));
     inorderTraversalNotInStruct(treeNodePtr->right);
 }
 

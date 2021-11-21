@@ -2,6 +2,7 @@
 #define I_GUARD_THE_B_TREE_HEADER
 
 #include "tree_node.h"
+#include "disk_simulation.h"
 
 typedef struct btree
 {
@@ -26,6 +27,5 @@ void borrowFromRightSibling(btree *, tree_node *, int);
 void borrowFromLeftSibling(btree *, tree_node *, int);
 void checkInRightSibling(btree *, tree_node *, int, int *);
 void checkInLeftSibling(btree *, tree_node *, int, int *);
-void mergeWNodes(btree *, tree_node *, int);
 void traverseBTree(tree_node *);
 #endif

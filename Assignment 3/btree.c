@@ -59,6 +59,10 @@ void splitNode(btree *treePtr, tree_node *parentOfNodeToSplit, int index)
     parentOfNodeToSplit->keys[index] = nodeToSplit->keys[minimumDegree - 1];
     parentOfNodeToSplit->children[index + 1] = nodeCreated;
     parentOfNodeToSplit->numberOfKeys++;
+
+    diskWriteBTree(parentOfNodeToSplit);
+    diskWriteBTree(nodeToSplit);
+    diskWriteBTree(nodeCreated);
 }
 
 void insertIntoBTreeNotInStruct(btree *treePtr, int keyToBeInserted)
@@ -112,6 +116,7 @@ void insertIntoNonFullRoot(btree *treePtr, tree_node *treeNodePtr, int keyToBeIn
         }
         treeNodePtr->keys[i] = keyToBeInserted;
         treeNodePtr->numberOfKeys++;
+        diskWriteBTree(treeNodePtr);
     }
     else
     {
@@ -124,6 +129,7 @@ void insertIntoNonFullRoot(btree *treePtr, tree_node *treeNodePtr, int keyToBeIn
             }
         }
 
+        diskWriteBTree(treeNodePtr->children[i]);
         if (treeNodePtr->children[i]->numberOfKeys == 2 * treePtr->minimumDegree - 1)
         {
             splitNode(treePtr, treeNodePtr, i);
@@ -163,6 +169,7 @@ foundStructInfo *searchBTreeNotInStruct(tree_node *treeNodePtr, int keyToBeSearc
     {
         return (NULL);
     }
+    // diskReadBTree(treeNodePtr->children[i]);
     return (searchBTreeNotInStruct(treeNodePtr->children[i], keyToBeSearched));
 }
 
@@ -426,6 +433,7 @@ void traverseBTree(tree_node *treeNodePtr)
     {
         printf("%d ", treeNodePtr->keys[i]);
     }
+    printf("- %d %d", treeNodePtr->row, treeNodePtr->column);
     printf("\n");
 
     for (int i = 0; i <= treeNodePtr->numberOfKeys; i++)
