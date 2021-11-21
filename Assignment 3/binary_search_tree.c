@@ -3,6 +3,7 @@
 
 #include "binary_search_tree.h"
 #include "helpful_functions.h"
+#include "disk_simulation.h"
 
 binary_search_tree *newBinarySearchTree()
 {
@@ -68,7 +69,7 @@ void inorderTraversalNotInStruct(bst_node *treeNodePtr)
     }
 
     inorderTraversalNotInStruct(treeNodePtr->left);
-    printf("%d: %d\n", treeNodePtr->song, getHeightOfNode(treeNodePtr));
+    printf("%d\n", treeNodePtr->song);
     inorderTraversalNotInStruct(treeNodePtr->right);
 }
 

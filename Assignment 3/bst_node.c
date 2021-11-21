@@ -11,19 +11,6 @@ bst_node *newNode(int song)
     ptr->left = NULL;
     ptr->right = NULL;
     ptr->song = song;
-    ptr->height = 1;
 
     return (ptr);
-}
-
-int getHeightOfNode(bst_node *ptr)
-{
-    if (ptr == NULL)
-    {
-        return (0);
-    }
-    else
-    {
-        return (ptr->height);
-    }
 }
