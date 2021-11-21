@@ -129,7 +129,7 @@ void insertIntoNonFullRoot(btree *treePtr, tree_node *treeNodePtr, int keyToBeIn
             }
         }
 
-        diskWriteBTree(treeNodePtr->children[i]);
+        diskReadBTree(treeNodePtr->children[i]);
         if (treeNodePtr->children[i]->numberOfKeys == 2 * treePtr->minimumDegree - 1)
         {
             splitNode(treePtr, treeNodePtr, i);
@@ -169,7 +169,7 @@ foundStructInfo *searchBTreeNotInStruct(tree_node *treeNodePtr, int keyToBeSearc
     {
         return (NULL);
     }
-    // diskReadBTree(treeNodePtr->children[i]);
+    diskReadBTree(treeNodePtr->children[i]);
     return (searchBTreeNotInStruct(treeNodePtr->children[i], keyToBeSearched));
 }
 
@@ -180,11 +180,13 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
     if (treeNodePtr->isLeaf)
     {
         printf("Case 3: Node is leaf\n");
+        diskReadBTree(treeNodePtr);
         for (int i = indexOfKeyToBeDeleted; i < treeNodePtr->numberOfKeys - 1; i++)
         {
             treeNodePtr->keys[i] = treeNodePtr->keys[i + 1];
         }
         treeNodePtr->numberOfKeys--;
+        diskWriteBTree(treeNodePtr);
     }
     else if (treeNodePtr == nodeContainingKey)
     {
@@ -195,6 +197,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
             printf("Case 2: Predecessor has enough keys\n");
             tree_node *predecessor = predecessorBTree(treeNodePtr->children[indexOfKeyToBeDeleted]);
             int predecessorIndex = predecessor->numberOfKeys - 1;
+            diskReadBTree(predecessor);
             int predecessorKey = predecessor->keys[predecessorIndex];
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted], predecessor, predecessorIndex);
             treeNodePtr->keys[indexOfKeyToBeDeleted] = predecessorKey;
@@ -204,6 +207,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
         {
             printf("Case 2: Successor has enough keys\n");
             tree_node *successor = successorBTree(treeNodePtr->children[indexOfKeyToBeDeleted + 1]);
+            diskReadBTree(successor);
             int successorKey = successor->keys[0];
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted + 1], successor, 0);
             treeNodePtr->keys[indexOfKeyToBeDeleted] = successorKey;
@@ -218,6 +222,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
     else
     {
         // key is not present in the internal node
+        diskReadBTree(treeNodePtr);
         int keyToBeDeleted = nodeContainingKey->keys[indexOfKeyToBeDeleted];
         int i = 0; // Index of apt child subtree
         for (i = 0; i < treeNodePtr->numberOfKeys; i++)
