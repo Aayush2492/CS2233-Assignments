@@ -3,6 +3,6 @@
 
 #include "btree.h"
 
-void readFile(char *, btree *);
+void readFile(char *, btree *, int);
 
 #endif

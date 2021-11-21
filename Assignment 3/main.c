@@ -18,19 +18,35 @@ void deleteByKey(btree *treePtr, int key)
 }
 int main()
 {
-    char fileName[] = "input.txt";
-    btree *treePtr = newBtree(2);
+    char inputFile[] = "input.txt";
+    char deleteFile[] = "delete.txt";
+    char searchFile[] = "search.txt";
+    btree *treePtr = newBtree(3);
 
-    readFile(fileName, treePtr);
+    readFile(inputFile, treePtr, 1);
+    printf("\n");
+    //readFile(searchFile, treePtr, 0);
+
+    // foundStructInfo *node = treePtr->searchBTree(treePtr->root, 49);
+    // if (node == NULL)
+    // {
+    //     printf("%d not in BTree\n", 49);
+    // }
+    // else
+    // {
+    //     printf("Found: %d\n", node->indexInNode);
+    // }
+    // readFile(deleteFile, treePtr, -1);
 
     traverseBTree(treePtr->root);
 
-    deleteByKey(treePtr, 60);
-    deleteByKey(treePtr, 44);
-    deleteByKey(treePtr, 32);
-    deleteByKey(treePtr, 38);
-    deleteByKey(treePtr, 17);
-    traverseBTree(treePtr->root);
+    // deleteByKey(treePtr, 51);
+    // deleteByKey(treePtr, 21);
+    // deleteByKey(treePtr, 52);
+    // deleteByKey(treePtr, 45);
 
+    // deleteByKey(treePtr, 38);
+    // deleteByKey(treePtr, 17);
+    // deleteByKey(treePtr, 27);
     return 0;
 }

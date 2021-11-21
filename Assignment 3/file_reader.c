@@ -5,7 +5,10 @@
 #include "file_reader.h"
 #include "tree_node.h"
 
-void readFile(char *fileName, btree *treePtr)
+//mode = 1 for insertion
+//mode = 0 for search
+//mode = -1 for deletion
+void readFile(char *fileName, btree *treePtr, int mode)
 {
     char *lineptr = NULL;
     size_t len;
@@ -32,6 +35,32 @@ void readFile(char *fileName, btree *treePtr)
         int i = atoi(dest);
         free(dest);
 
-        treePtr->insertIntoBTree(treePtr, i);
+        if (mode == 1)
+            treePtr->insertIntoBTree(treePtr, i);
+        else if (mode == 0)
+        {
+            foundStructInfo *node = treePtr->searchBTree(treePtr->root, i);
+            if (node == NULL)
+            {
+                printf("%d not in BTree\n", i);
+            }
+            else
+            {
+                printf("Found: %d\n", node->indexInNode);
+            }
+        }
+        else if (mode == -1)
+        {
+            foundStructInfo *node = treePtr->searchBTree(treePtr->root, i);
+            if (node == NULL)
+            {
+                printf("%d not in BTree\n", i);
+            }
+            else
+            {
+                printf("Found: %d\n", node->indexInNode);
+                treePtr->deleteFromBTree(treePtr, treePtr->root, node->nodeFound, node->indexInNode);
+            }
+        }
     }
 }
