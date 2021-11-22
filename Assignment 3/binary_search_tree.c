@@ -1,4 +1,3 @@
-#include <string.h>
 #include <stdio.h>
 
 #include "binary_search_tree.h"
@@ -69,7 +68,7 @@ void inorderTraversalNotInStruct(bst_node *treeNodePtr)
     }
 
     inorderTraversalNotInStruct(treeNodePtr->left);
-    printf("%d\n", treeNodePtr->song);
+    printf("%d: (%d,%d)\n", treeNodePtr->song, treeNodePtr->row, treeNodePtr->column);
     inorderTraversalNotInStruct(treeNodePtr->right);
 }
 
@@ -220,9 +219,9 @@ void deleteFromBSTNotInStruct(binary_search_tree *treePtr, bst_node *treeNodePtr
     else // Two children of node to be deleted
     {
         bst_node *successorOfNodeToBeDeleted = successorBSTNotInStruct(treeNodePtr);
-        int t = treeNodePtr->song;
+        int temp = treeNodePtr->song;
         treeNodePtr->song = successorOfNodeToBeDeleted->song;
-        successorOfNodeToBeDeleted->song = t;
+        successorOfNodeToBeDeleted->song = temp;
         deleteFromBSTNotInStruct(treePtr, successorOfNodeToBeDeleted);
     }
 }

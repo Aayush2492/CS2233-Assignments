@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "bst_node.h"
+#include "disk_simulation.h"
 
 bst_node *newNode(int song)
 {
@@ -11,6 +12,7 @@ bst_node *newNode(int song)
     ptr->left = NULL;
     ptr->right = NULL;
     ptr->song = song;
+    allocateNodeBST(ptr);
 
     return (ptr);
 }

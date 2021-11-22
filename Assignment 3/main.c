@@ -1,23 +1,10 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "btree.h"
 #include "binary_search_tree.h"
 #include "file_reader.h"
 #include "disk_simulation.h"
-
-// void deleteByKey(btree *treePtr, int key)
-// {
-//     foundStructInfo *node = treePtr->searchBTree(treePtr->root, key);
-//     if (node == NULL)
-//     {
-//         printf("Not Found\n");
-//     }
-//     else
-//     {
-//         printf("Found: %d\n", node->indexInNode);
-//         treePtr->deleteFromBTree(treePtr, treePtr->root, node->nodeFound, node->indexInNode);
-//     }
-// }
 
 int main()
 {
@@ -37,6 +24,13 @@ int main()
     int timeForDeletionInBTree = timeForBTree - timeForSearchInBTree;
 
     traverseBTree(treePtr->root);
+    printf("After\n");
+
+    // Resetting for
+    //memset(primaryMemory, 0, 4 * t * sizeof(primaryMemory[0]));
+    //memset(secondaryMemory, 0, sizeof(secondaryMemory[0][0]) * 4 * t * N);
+    minDegree = 1; //minDegree = 1 for BST
+    numberOfNodes = 0;
 
     binary_search_tree *treePtr2 = newBinarySearchTree();
 
@@ -46,10 +40,17 @@ int main()
     readFileBST(searchFile, treePtr2, 0);
     int timeForSearchInBST = timeForBST - timeForInsertionInBST;
 
-    readFileBST(deleteFile, treePtr2, -1);
-    int timeForDeletionInBST = timeForBST - timeForSearchInBST;
+    // readFileBST(deleteFile, treePtr2, -1);
+    // int timeForDeletionInBST = timeForBST - timeForSearchInBST;
 
     treePtr2->inorderTravesal(treePtr2->root);
+
+    printf("Time for Insertion In B-Tree: %d units\n", timeForInsertionInBTree);
+    printf("Time for Search In B-Tree: %d units\n", timeForSearchInBTree);
+    printf("Time for Deletion In B-Tree: %d units\n", timeForDeletionInBTree);
+    printf("Time for Insertion In BST: %d units\n", timeForInsertionInBST);
+    printf("Time for Search In BST: %d units\n", timeForSearchInBST);
+    // printf("Time for Deletion In BST: %d units\n", timeForDeletionInBST);
 
     return 0;
 }

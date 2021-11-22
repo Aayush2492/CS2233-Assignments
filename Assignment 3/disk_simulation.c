@@ -7,9 +7,10 @@
 #define N 20
 int **secondaryMemory[N][2 * t] = {0};
 int *primaryMemory[4 * t] = {0};
-int numberOfBTreeNodes = 0;
+int numberOfNodes = 0;
 int timeForBTree = 0;
 int timeForBST = 0;
+int minDegree = 3;
 
 void allocateNodeBTree(tree_node *treeNodePtr)
 {
@@ -17,10 +18,10 @@ void allocateNodeBTree(tree_node *treeNodePtr)
     int maxBTreeNodesInABlock = (int)floor(((double)(2 * t)) / (2 * minDegree - 1));
 
     int row, column;
-    row = numberOfBTreeNodes / maxBTreeNodesInABlock;
-    column = (numberOfBTreeNodes % maxBTreeNodesInABlock) * (2 * minDegree - 1);
+    row = numberOfNodes / maxBTreeNodesInABlock;
+    column = (numberOfNodes % maxBTreeNodesInABlock) * (2 * minDegree - 1);
 
-    numberOfBTreeNodes++;
+    numberOfNodes++;
     treeNodePtr->row = row;
     treeNodePtr->column = column;
 
@@ -49,6 +50,17 @@ void diskWriteBTree(tree_node *treeNodePtr)
 
 void allocateNodeBST(bst_node *treeNodePtr)
 {
+    int maxBSTNodesInABlock = (int)floor(((double)(2 * t)) / (2 * minDegree - 1));
+
+    int row, column;
+    row = numberOfNodes / maxBSTNodesInABlock;
+    column = (numberOfNodes % maxBSTNodesInABlock) * (2 * minDegree - 1);
+
+    numberOfNodes++;
+    treeNodePtr->row = row;
+    treeNodePtr->column = column;
+
+    timeForBTree += 1;
 }
 
 void diskReadBST(bst_node *treeNodePtr)

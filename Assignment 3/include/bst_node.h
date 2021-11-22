@@ -7,6 +7,7 @@ typedef struct bst_node
     struct bst_node *left;
     struct bst_node *right;
     int song;
+    int row, column;
 
 } bst_node;
 

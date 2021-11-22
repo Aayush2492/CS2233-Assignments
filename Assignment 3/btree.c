@@ -336,6 +336,7 @@ void checkInLeftSibling(btree *treePtr, tree_node *treeNodePtr, int index, int *
 void borrowFromRightSibling(btree *treePtr, tree_node *treeNodePtr, int index)
 {
     tree_node *child = treeNodePtr->children[index];
+    diskReadBTree(child);
     tree_node *rightSibling = treeNodePtr->children[index + 1];
 
     //Moving the key from parent to child node
@@ -343,10 +344,14 @@ void borrowFromRightSibling(btree *treePtr, tree_node *treeNodePtr, int index)
 
     //Moving the key from right sibling to parent
     treeNodePtr->keys[index] = rightSibling->keys[0];
+    diskWriteBTree(treeNodePtr);
 
     //Moving the child pointer from right sibling
     child->children[child->numberOfKeys + 1] = rightSibling->children[0];
+    child->numberOfKeys++;
+    diskWriteBTree(child);
 
+    diskReadBTree(rightSibling);
     // Shifting keys to the left in rightSibling
     for (int i = 0; i <= rightSibling->numberOfKeys - 1; i++)
     {
@@ -355,14 +360,14 @@ void borrowFromRightSibling(btree *treePtr, tree_node *treeNodePtr, int index)
         if (i != rightSibling->numberOfKeys - 1)
             rightSibling->keys[i] = rightSibling->keys[i + 1];
     }
-
-    child->numberOfKeys++;
     rightSibling->numberOfKeys--;
+    diskWriteBTree(rightSibling);
 }
 
 void borrowFromLeftSibling(btree *treePtr, tree_node *treeNodePtr, int index)
 {
     tree_node *child = treeNodePtr->children[index];
+    diskReadBTree(child);
     tree_node *leftSibling = treeNodePtr->children[index - 1];
 
     // Moving the key from parent to child node
@@ -378,10 +383,15 @@ void borrowFromLeftSibling(btree *treePtr, tree_node *treeNodePtr, int index)
     //Moving the child pointer from left sibling
     child->children[0] = leftSibling->children[leftSibling->numberOfKeys];
 
+    child->numberOfKeys++;
+    diskWriteBTree(child);
+
+    diskReadBTree(leftSibling);
+
     //Moving the key from left sibling to parent
     treeNodePtr->keys[index - 1] = leftSibling->keys[leftSibling->numberOfKeys - 1];
+    diskWriteBTree(treeNodePtr);
 
-    child->numberOfKeys++;
     leftSibling->numberOfKeys--;
     traverseBTree(treePtr->root);
 }
@@ -438,8 +448,7 @@ void traverseBTree(tree_node *treeNodePtr)
     {
         printf("%d ", treeNodePtr->keys[i]);
     }
-    printf("- %d %d", treeNodePtr->row, treeNodePtr->column);
-    printf("\n");
+    printf("- (%d,%d)\n", treeNodePtr->row, treeNodePtr->column);
 
     for (int i = 0; i <= treeNodePtr->numberOfKeys; i++)
     {
