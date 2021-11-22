@@ -4,9 +4,17 @@
 #include "tree_node.h"
 #include "bst_node.h"
 
-#define minDegree 3
+#define t 10
+#define N 20
 extern int timeForBTree;
 extern int timeForBST;
+extern int **secondaryMemory[N][2 * t];
+extern int *primaryMemory[4 * t];
+extern int numberOfNodes;
+extern int timeForBTree;
+extern int timeForBST;
+extern int minDegree;
+extern int currentRow;
 
 void allocateNodeBTree(tree_node *);
 void diskReadBTree(tree_node *);

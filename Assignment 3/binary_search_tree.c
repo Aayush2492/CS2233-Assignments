@@ -35,6 +35,15 @@ void insertIntoBSTNotInStruct(binary_search_tree *treePtr, int songToBeAdded)
         bst_node *x = treePtr->root;
         while (x != NULL)
         {
+            if (x->row != currentRow)
+            {
+                diskReadBST(x);
+            }
+            else
+            {
+                timeForBST += 1;
+            }
+
             y = x;
             if (x->song > songToBeAdded)
             {
@@ -75,6 +84,19 @@ void inorderTraversalNotInStruct(bst_node *treeNodePtr)
 bst_node *searchBSTNotInStruct(bst_node *treeNodePtr, int songToBeSearched)
 {
     bst_node *x = treeNodePtr;
+
+    if (x != NULL)
+    {
+        if (x->row != currentRow)
+        {
+            diskReadBST(x);
+        }
+        else
+        {
+            timeForBST += 1;
+        }
+    }
+
     if (x == NULL) // Not found case
     {
         return (NULL);
@@ -219,9 +241,33 @@ void deleteFromBSTNotInStruct(binary_search_tree *treePtr, bst_node *treeNodePtr
     else // Two children of node to be deleted
     {
         bst_node *successorOfNodeToBeDeleted = successorBSTNotInStruct(treeNodePtr);
+
+        if (treeNodePtr->row != currentRow)
+        {
+            diskReadBST(treeNodePtr);
+        }
+        else
+        {
+            timeForBST += 1;
+        }
+
         int temp = treeNodePtr->song;
+
+        if (successorOfNodeToBeDeleted->row != currentRow)
+        {
+            diskReadBST(successorOfNodeToBeDeleted);
+        }
+        else
+        {
+            timeForBST += 1;
+        }
+
         treeNodePtr->song = successorOfNodeToBeDeleted->song;
+        diskWriteBTree(treeNodePtr);
+
         successorOfNodeToBeDeleted->song = temp;
+        diskWriteBTree(treeNodePtr);
+
         deleteFromBSTNotInStruct(treePtr, successorOfNodeToBeDeleted);
     }
 }

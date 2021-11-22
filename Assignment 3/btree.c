@@ -106,6 +106,7 @@ void insertIntoNonFullRoot(btree *treePtr, tree_node *treeNodePtr, int keyToBeIn
         {
             if (treeNodePtr->keys[i] > keyToBeInserted)
             {
+                timeForBTree += 1;
                 break;
             }
         }
@@ -113,6 +114,7 @@ void insertIntoNonFullRoot(btree *treePtr, tree_node *treeNodePtr, int keyToBeIn
         for (int j = treeNodePtr->numberOfKeys - 1; j >= i; j--)
         {
             treeNodePtr->keys[j + 1] = treeNodePtr->keys[j];
+            timeForBTree += 1;
         }
         treeNodePtr->keys[i] = keyToBeInserted;
         treeNodePtr->numberOfKeys++;
@@ -150,6 +152,7 @@ foundStructInfo *searchBTreeNotInStruct(tree_node *treeNodePtr, int keyToBeSearc
     {
         if (treeNodePtr->keys[i] == keyToBeSearched)
         {
+            timeForBTree += 1;
             foundStructInfo *aboutFoundElement = (foundStructInfo *)malloc(sizeof(foundStructInfo));
             aboutFoundElement->nodeFound = treeNodePtr;
             aboutFoundElement->indexInNode = i;
@@ -184,6 +187,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
         for (int i = indexOfKeyToBeDeleted; i < treeNodePtr->numberOfKeys - 1; i++)
         {
             treeNodePtr->keys[i] = treeNodePtr->keys[i + 1];
+            timeForBTree += 1;
         }
         treeNodePtr->numberOfKeys--;
         diskWriteBTree(treeNodePtr);
@@ -199,6 +203,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
             int predecessorIndex = predecessor->numberOfKeys - 1;
             diskReadBTree(predecessor);
             int predecessorKey = predecessor->keys[predecessorIndex];
+            timeForBTree += 1;
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted], predecessor, predecessorIndex);
             treeNodePtr->keys[indexOfKeyToBeDeleted] = predecessorKey;
             //treeNodePtr->numberOfKeys--;
@@ -209,6 +214,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
             tree_node *successor = successorBTree(treeNodePtr->children[indexOfKeyToBeDeleted + 1]);
             diskReadBTree(successor);
             int successorKey = successor->keys[0];
+            timeForBTree += 1;
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[indexOfKeyToBeDeleted + 1], successor, 0);
             treeNodePtr->keys[indexOfKeyToBeDeleted] = successorKey;
             //treeNodePtr->numberOfKeys--;
@@ -227,6 +233,7 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
         int i = 0; // Index of apt child subtree
         for (i = 0; i < treeNodePtr->numberOfKeys; i++)
         {
+            timeForBTree += 1;
             if (treeNodePtr->keys[i] > keyToBeDeleted)
             {
                 break;
@@ -355,6 +362,7 @@ void borrowFromRightSibling(btree *treePtr, tree_node *treeNodePtr, int index)
     // Shifting keys to the left in rightSibling
     for (int i = 0; i <= rightSibling->numberOfKeys - 1; i++)
     {
+        timeForBTree += 1;
         rightSibling->children[i] = rightSibling->children[i + 1];
 
         if (i != rightSibling->numberOfKeys - 1)
@@ -373,6 +381,7 @@ void borrowFromLeftSibling(btree *treePtr, tree_node *treeNodePtr, int index)
     // Moving the key from parent to child node
     for (int i = child->numberOfKeys; i >= 0; i--)
     {
+        timeForBTree += 1;
         if (i != child->numberOfKeys)
             child->keys[i + 1] = child->keys[i];
 
@@ -411,6 +420,7 @@ void mergeNodes(btree *treePtr, tree_node *treeNodePtr, int index)
     {
         if (i != treePtr->minimumDegree - 1)
         {
+            timeForBTree += 1;
             leftChild->keys[treePtr->minimumDegree + i] = rightChild->keys[i];
             leftChild->numberOfKeys++;
             rightChild->numberOfKeys--;
@@ -423,6 +433,7 @@ void mergeNodes(btree *treePtr, tree_node *treeNodePtr, int index)
     {
         if (i != treeNodePtr->numberOfKeys - 1)
         {
+            timeForBTree += 1;
             treeNodePtr->keys[i] = treeNodePtr->keys[i + 1];
         }
 

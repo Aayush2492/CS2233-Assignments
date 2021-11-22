@@ -26,9 +26,7 @@ int main()
     traverseBTree(treePtr->root);
     printf("After\n");
 
-    // Resetting for
-    //memset(primaryMemory, 0, 4 * t * sizeof(primaryMemory[0]));
-    //memset(secondaryMemory, 0, sizeof(secondaryMemory[0][0]) * 4 * t * N);
+    // Resetting for BST
     minDegree = 1; //minDegree = 1 for BST
     numberOfNodes = 0;
 

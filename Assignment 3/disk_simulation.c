@@ -11,6 +11,7 @@ int numberOfNodes = 0;
 int timeForBTree = 0;
 int timeForBST = 0;
 int minDegree = 3;
+int currentRow = 0;
 
 void allocateNodeBTree(tree_node *treeNodePtr)
 {
@@ -36,14 +37,15 @@ void diskReadBTree(tree_node *treeNodePtr)
         primaryMemory[i] = secondaryMemory[treeNodePtr->row][i];
     }
     timeForBTree += 10;
+    currentRow = treeNodePtr->row;
 }
 
 void diskWriteBTree(tree_node *treeNodePtr)
 {
     // Make changes in secondary memory
-    for (int i = treeNodePtr->column; i < treeNodePtr->numberOfKeys; i++)
+    for (int i = 0; i < 2 * t; i++)
     {
-        secondaryMemory[treeNodePtr->row][i] = treeNodePtr->keys[i];
+        secondaryMemory[treeNodePtr->row][i] = primaryMemory[i];
     }
     timeForBTree += 10;
 }
@@ -60,13 +62,24 @@ void allocateNodeBST(bst_node *treeNodePtr)
     treeNodePtr->row = row;
     treeNodePtr->column = column;
 
-    timeForBTree += 1;
+    timeForBST += 1;
 }
 
 void diskReadBST(bst_node *treeNodePtr)
 {
+    for (int i = 0; i < 2 * t; i++)
+    {
+        primaryMemory[i] = secondaryMemory[treeNodePtr->row][i];
+    }
+    timeForBST += 10;
+    currentRow = treeNodePtr->row;
 }
 
 void diskWriteBST(bst_node *treeNodePtr)
 {
+    for (int i = 0; i < 2 * t; i++)
+    {
+        secondaryMemory[treeNodePtr->row][i] = primaryMemory[i];
+    }
+    timeForBST += 10;
 }
