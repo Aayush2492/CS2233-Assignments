@@ -47,7 +47,7 @@ void readFileBTree(char *fileName, btree *treePtr, int mode)
             }
             else
             {
-                printf("Found: %d\n", node->indexInNode);
+                //printf("Found: %d\n", node->indexInNode);
             }
         }
         else if (mode == -1)
@@ -59,7 +59,7 @@ void readFileBTree(char *fileName, btree *treePtr, int mode)
             }
             else
             {
-                printf("Found: %d\n", node->indexInNode);
+                // printf("Found: %d\n", node->indexInNode);
                 treePtr->deleteFromBTree(treePtr, treePtr->root, node->nodeFound, node->indexInNode);
             }
         }
@@ -115,7 +115,7 @@ void readFileBST(char *fileName, binary_search_tree *treePtr, int mode)
             bst_node *node = treePtr->searchBST(treePtr->root, i);
             if (node == NULL)
             {
-                printf("%d not in BTree\n", i);
+                printf("%d not in BST\n", i);
             }
             else
             {

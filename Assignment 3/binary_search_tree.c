@@ -263,10 +263,10 @@ void deleteFromBSTNotInStruct(binary_search_tree *treePtr, bst_node *treeNodePtr
         }
 
         treeNodePtr->song = successorOfNodeToBeDeleted->song;
-        diskWriteBTree(treeNodePtr);
+        diskWriteBST(treeNodePtr);
 
         successorOfNodeToBeDeleted->song = temp;
-        diskWriteBTree(treeNodePtr);
+        diskWriteBST(treeNodePtr);
 
         deleteFromBSTNotInStruct(treePtr, successorOfNodeToBeDeleted);
     }

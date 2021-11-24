@@ -3,14 +3,23 @@
 
 #include "disk_simulation.h"
 
-#define t 10
-#define N 20
-int **secondaryMemory[N][2 * t] = {0};
-int *primaryMemory[4 * t] = {0};
+/**
+ * 
+ * primary memory is maintained as a 1d array of size 4t
+ * secondary memory is a double dimensional array of size 2t * N
+ * 
+ * diskRead operation transfers a row of data from secondary memory to primary memory
+ * diskWrite operation transfers a row of data from primary memory to secondary memory
+ * 
+ * The last 2t elements of primary memory are reserved for some local variables to be used
+ * in insertion and deletion operations
+ */
+int secondaryMemory[N][2 * t] = {0};
+int primaryMemory[4 * t] = {0};
 int numberOfNodes = 0;
 int timeForBTree = 0;
 int timeForBST = 0;
-int minDegree = 3;
+int minDegree = 2;
 int currentRow = 0;
 
 void allocateNodeBTree(tree_node *treeNodePtr)

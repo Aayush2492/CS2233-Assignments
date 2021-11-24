@@ -182,7 +182,6 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
     int keyToBeDeleted = nodeContainingKey->keys[indexOfKeyToBeDeleted];
     if (treeNodePtr->isLeaf)
     {
-        printf("Case 3: Node is leaf\n");
         diskReadBTree(treeNodePtr);
         for (int i = indexOfKeyToBeDeleted; i < treeNodePtr->numberOfKeys - 1; i++)
         {
@@ -195,10 +194,8 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
     else if (treeNodePtr == nodeContainingKey)
     {
         // key is present in an internal node
-        printf("Case 2: key is present in an internal node %d\n", indexOfKeyToBeDeleted);
         if (treeNodePtr->children[indexOfKeyToBeDeleted]->numberOfKeys >= treePtr->minimumDegree)
         {
-            printf("Case 2: Predecessor has enough keys\n");
             tree_node *predecessor = predecessorBTree(treeNodePtr->children[indexOfKeyToBeDeleted]);
             int predecessorIndex = predecessor->numberOfKeys - 1;
             diskReadBTree(predecessor);
@@ -210,7 +207,6 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
         }
         else if (treeNodePtr->children[indexOfKeyToBeDeleted + 1]->numberOfKeys >= treePtr->minimumDegree)
         {
-            printf("Case 2: Successor has enough keys\n");
             tree_node *successor = successorBTree(treeNodePtr->children[indexOfKeyToBeDeleted + 1]);
             diskReadBTree(successor);
             int successorKey = successor->keys[0];
@@ -239,23 +235,19 @@ void deleteFromBTreeNotInStruct(btree *treePtr, tree_node *treeNodePtr, tree_nod
                 break;
             }
         }
-        printf("Case 3, %d\n", i);
         if (treeNodePtr->children[i]->numberOfKeys >= treePtr->minimumDegree)
         {
             // The child has >= t keys
-            printf("Case 3-0\n");
             treePtr->deleteFromBTree(treePtr, treeNodePtr->children[i], nodeContainingKey, indexOfKeyToBeDeleted);
         }
         else // The child has only t-1 keys
         {
-            printf("Case 3-1\n");
             int flag = 0;
             // flag will be set to 1 if merging with right sibling happens
             // flag will be set to -1 if merging with left sibling happens
             // flag will stay 0 if only borrowing i.e. no merging happens
 
             checkInRightSibling(treePtr, treeNodePtr, i, &flag);
-            printf("Flag: %d\n", flag);
             foundStructInfo *node = treePtr->searchBTree(treeNodePtr->children[i + flag], keyToBeDeleted);
             nodeContainingKey = node->nodeFound;
             indexOfKeyToBeDeleted = node->indexInNode;
@@ -289,7 +281,6 @@ void checkInRightSibling(btree *treePtr, tree_node *treeNodePtr, int index, int 
     if (index == treeNodePtr->numberOfKeys)
     {
         // No right sibling exists
-        printf("Case 3: No right sibling\n");
         checkInLeftSibling(treePtr, treeNodePtr, index, flagPtr);
         return;
     }
@@ -316,23 +307,20 @@ void checkInLeftSibling(btree *treePtr, tree_node *treeNodePtr, int index, int *
         // right sibling has lesser <=t-1 keys
         // Merge with right
         mergeNodes(treePtr, treeNodePtr, index);
-        *flagPtr = 1;
+        *flagPtr = 0;
         return;
     }
     else
     {
-        printf("Case 3: Left sibling exists\n");
         if (treeNodePtr->children[index - 1]->numberOfKeys >= treePtr->minimumDegree)
         {
             // Left sibling has >= t keys
-            printf("Case 3: Left sibling has >= t keys\n");
             borrowFromLeftSibling(treePtr, treeNodePtr, index);
             return;
         }
         else
         {
             // Merge with left
-            printf("Left sibling has < t nodes\n");
             mergeNodes(treePtr, treeNodePtr, index - 1);
             *flagPtr = -1;
             return;
@@ -402,7 +390,6 @@ void borrowFromLeftSibling(btree *treePtr, tree_node *treeNodePtr, int index)
     diskWriteBTree(treeNodePtr);
 
     leftSibling->numberOfKeys--;
-    traverseBTree(treePtr->root);
 }
 
 // Merging children nodes of treeNodePtr at index, index+1
@@ -412,9 +399,11 @@ void mergeNodes(btree *treePtr, tree_node *treeNodePtr, int index)
     tree_node *rightChild = treeNodePtr->children[index + 1];
 
     // Left child gets the key from parent
+    diskReadBTree(leftChild);
     leftChild->keys[treePtr->minimumDegree - 1] = treeNodePtr->keys[index];
     leftChild->numberOfKeys++;
 
+    diskReadBTree(rightChild);
     // Moving the keys and children pointers from right to left child
     for (int i = 0; i <= treePtr->minimumDegree - 1; i++)
     {
@@ -425,7 +414,8 @@ void mergeNodes(btree *treePtr, tree_node *treeNodePtr, int index)
             leftChild->numberOfKeys++;
             rightChild->numberOfKeys--;
         }
-        leftChild->children[treePtr->minimumDegree + i] = rightChild->children[i];
+        if (!leftChild->isLeaf)
+            leftChild->children[treePtr->minimumDegree + i] = rightChild->children[i];
     }
 
     // Shifting keys and children pointers in parent
@@ -443,8 +433,8 @@ void mergeNodes(btree *treePtr, tree_node *treeNodePtr, int index)
         }
     }
     treeNodePtr->numberOfKeys--;
+    diskWriteBTree(treeNodePtr);
     free(rightChild);
-    traverseBTree(treePtr->root);
 }
 
 void traverseBTree(tree_node *treeNodePtr)
