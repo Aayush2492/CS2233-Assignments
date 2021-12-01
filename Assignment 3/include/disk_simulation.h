@@ -8,8 +8,8 @@
 #define N 20
 extern int timeForBTree;
 extern int timeForBST;
-extern int **secondaryMemory[N][2 * t];
-extern int *primaryMemory[4 * t];
+extern int secondaryMemory[N][2 * t];
+extern int primaryMemory[4 * t];
 extern int numberOfNodes;
 extern int timeForBTree;
 extern int timeForBST;

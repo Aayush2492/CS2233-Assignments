@@ -19,7 +19,7 @@ int primaryMemory[4 * t] = {0};
 int numberOfNodes = 0;
 int timeForBTree = 0;
 int timeForBST = 0;
-int minDegree = 2;
+int minDegree = 4;
 int currentRow = 0;
 
 void allocateNodeBTree(tree_node *treeNodePtr)
