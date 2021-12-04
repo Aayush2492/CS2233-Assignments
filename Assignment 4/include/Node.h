@@ -14,7 +14,7 @@ public:
     // int timeOfRecovery;
     Node(unsigned _id)
     {
-        state = 0;
+        state = 0; // intial state is susceptible
         id = _id;
         // timeOfInfection = -1;
         // timeOfRecovery = -1;

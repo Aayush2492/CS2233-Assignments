@@ -5,6 +5,7 @@
 #include <queue>
 
 #include "Node.h"
+#include "Queue.h"
 
 class Graph
 {
@@ -44,23 +45,29 @@ public:
     void BreadthFirstSearch(Node *startNode)
     {
         std::vector<bool> visited(nodes.size(), false);
-        std::queue<Node *> queue;
+        // std::queue<Node *> queue;
+        Queue queue;
 
-        queue.push(startNode);
+        // queue.push(startNode);
+        queue.enqueue(startNode);
+
         visited[startNode->id] = true;
         startNode->parent = NULL;
         startNode->level = 0;
 
-        while (!queue.empty())
+        // while (!queue.empty())
+        while (!queue.isEmpty())
         {
-            Node *currentNode = queue.front();
-            queue.pop();
+            // Node *currentNode = queue.front();
+            // queue.pop();
+            Node *currentNode = queue.dequeue();
 
             for (unsigned i = 0; i < nodes.size(); i++)
             {
                 if (adjacencyMatrix[currentNode->id][i] && !visited[i])
                 {
-                    queue.push(nodes[i]);
+                    // queue.push(nodes[i]);
+                    queue.enqueue(nodes[i]);
                     visited[i] = true;
                     nodes[i]->parent = currentNode;
                     nodes[i]->level = currentNode->level + 1;
