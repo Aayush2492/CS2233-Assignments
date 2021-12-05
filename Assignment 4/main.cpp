@@ -9,7 +9,7 @@
 #include "Graph.h"
 #include "Event.h"
 
-#define N 1000
+#define N 200
 
 /**
  *
@@ -32,10 +32,6 @@ int main()
     std::set<unsigned> recoveryEventSet;
     std::set<unsigned> susceptibleEventSet;
     std::vector<time_events> timeEvents;
-
-    // std::vector<unsigned> infectedWithTime;
-    // std::vector<unsigned> susceptibleWithTime;
-    // std::vector<unsigned> recoveredWithTime;
 
     for (int i = 0; i < N; i++)
     {
@@ -60,14 +56,12 @@ int main()
         {
             // If recovery event
             recoveryEventSet.insert(currentEvent->person->id);
-            // currentEvent->person->state = 1;
             infectionEventSet.erase(currentEvent->person->id);
         }
         else if (currentEvent->typeOfEvent == -1)
         {
             // If infection event
             infectionEventSet.insert(currentEvent->person->id);
-            // currentEvent->person->state = -1;
             susceptibleEventSet.erase(currentEvent->person->id);
 
             Node *currentNode = currentEvent->person;
@@ -96,14 +90,11 @@ int main()
                     }
                     else
                     {
-                        // std::cout << "j = " << j << std::endl;
                         Event *newInfectionEvent = new Event(currentEvent->timeStamp + j, neighbour, -1);
                         eventHeap->insert(newInfectionEvent);
                         g->nodes[i]->timeOfInfection = currentEvent->timeStamp + j;
                         Event *newRecoveryEvent = new Event(currentEvent->timeStamp + j + rand() % 4 + 1, neighbour, 1);
                         eventHeap->insert(newRecoveryEvent);
-
-                        // std::cout << "Infected nodes distance " << neighbour->level << " at time " << currentEvent->timeStamp + j << std::endl;
                     }
                 }
             }
@@ -111,37 +102,29 @@ int main()
 
         if ((int)timeEvents.size() - 1 >= 0)
         {
-            std::cout << timeEvents.size() << std::endl;
             if (timeEvents[timeEvents.size() - 1].first == currentEvent->timeStamp)
             {
                 timeEvents.pop_back();
             }
         }
         timeEvents.push_back(std::make_pair(currentEvent->timeStamp, std::make_pair(susceptibleEventSet.size(), std::make_pair(infectionEventSet.size(), recoveryEventSet.size()))));
-        // infectedWithTime.push_back(infectionEventSet.size());
-        // susceptibleWithTime.push_back(susceptibleEventSet.size());
-        // recoveredWithTime.push_back(recoveryEventSet.size());
     }
-
-    // for (int i = 0; i < infectedWithTime.size(); i++)
-    // {
-    //     std::cout << "At time " << i << " : ";
-    //     std::cout << infectedWithTime[i] << " " << susceptibleWithTime[i] << " " << recoveredWithTime[i] << std::endl;
-    // }
 
     std::ofstream outfile;
     outfile.open("data.csv");
 
+    std::cout << "At time t : Susceptible Infected Recovered" << std::endl;
     for (int i = 0; i < timeEvents.size(); i++)
     {
-        // std::cout << "At time " << timeEvents[i].first << " : ";
-        // std::cout << timeEvents[i].second.first << " " << timeEvents[i].second.second.first << " " << timeEvents[i].second.second.second << std::endl;
+        std::cout << "At time " << timeEvents[i].first << " : ";
+        std::cout << timeEvents[i].second.first << " " << timeEvents[i].second.second.first << " " << timeEvents[i].second.second.second << std::endl;
         outfile << timeEvents[i].first << "," << timeEvents[i].second.first << "," << timeEvents[i].second.second.first << "," << timeEvents[i].second.second.second << std::endl;
     }
 
     for (int i = 0; i < N; i++)
     {
-        std::cout << "Node " << i << " with level " << g->nodes[i]->level << " got infected at " << g->nodes[i]->timeOfInfection << std::endl;
+        std::cout << "Node " << i + 1 << " with level " << g->nodes[i]->level << " got infected at time " << g->nodes[i]->timeOfInfection << std::endl;
     }
     return 0;
 }
+// "g++ -I include/ -std=c++14 *.cpp -o exec && ./exec && python3 plotter.py"
