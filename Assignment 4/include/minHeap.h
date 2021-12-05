@@ -43,7 +43,7 @@ private:
         unsigned right = 2 * index + 2;
         unsigned smallest = index;
 
-        if (left < numberOfEvents)
+        if (left < events.size())
         {
             if (events[left]->timeStamp < events[smallest]->timeStamp)
             {
@@ -51,9 +51,9 @@ private:
             }
         }
 
-        if (right < numberOfEvents)
+        if (right < events.size())
         {
-            if (events[right]->timeStamp < events[smallest]->timeStamp)
+            if (events[right]->timeStamp <= events[smallest]->timeStamp)
             {
                 smallest = right;
             }
@@ -62,9 +62,6 @@ private:
         if (smallest != index)
         {
             std::swap(events[index], events[smallest]);
-            // Event *temp = events[index];
-            // events[index] = events[smallest];
-            // events[smallest] = temp;
             heapify(smallest);
         }
     }

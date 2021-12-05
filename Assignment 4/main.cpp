@@ -8,7 +8,7 @@
 #include "Graph.h"
 #include "Event.h"
 
-#define N 5
+#define N 1000
 
 /**
  *
@@ -18,14 +18,23 @@
  *
  */
 
+using pairuu = std::pair<unsigned, unsigned>;
+using event_tuple = std::pair<unsigned, pairuu>;
+using time_events = std::pair<unsigned, event_tuple>;
+
 int main()
 {
-    printf("Graph begins\n");
     Graph *g = new Graph(N);
+
     minHeap *eventHeap = new minHeap();
     std::set<unsigned> infectionEventSet;
     std::set<unsigned> recoveryEventSet;
     std::set<unsigned> susceptibleEventSet;
+    std::vector<time_events> timeEvents;
+
+    std::vector<unsigned> infectedWithTime;
+    std::vector<unsigned> susceptibleWithTime;
+    std::vector<unsigned> recoveredWithTime;
 
     for (int i = 0; i < N; i++)
     {
@@ -42,18 +51,9 @@ int main()
 
     g->BreadthFirstSearch(g->nodes[randomIndex]);
 
-    // for (unsigned i = 0; i < g->nodes.size(); i++)
-    // {
-    //     std::cout << g->nodes[i]->id << " " << g->nodes[i]->level << std::endl;
-    // }
     while (eventHeap->events.size() > 0)
     {
         Event *currentEvent = eventHeap->deleteMin();
-        std::cout << currentEvent->timeStamp << "," << currentEvent->typeOfEvent << ":";
-
-        std::cout << susceptibleEventSet.size() << " ";
-        std::cout << infectionEventSet.size() << " ";
-        std::cout << recoveryEventSet.size() << std::endl;
 
         if (currentEvent->typeOfEvent == 1)
         {
@@ -97,21 +97,38 @@ int main()
                     {
                         // std::cout << "j = " << j << std::endl;
                         Event *newInfectionEvent = new Event(currentEvent->timeStamp + j, neighbour, -1);
-                        std::cout << "Inf: " << newInfectionEvent->timeStamp << std::endl;
                         eventHeap->insert(newInfectionEvent);
                         g->nodes[i]->timeOfInfection = currentEvent->timeStamp + j;
                         Event *newRecoveryEvent = new Event(currentEvent->timeStamp + j + rand() % 4 + 1, neighbour, 1);
-                        std::cout << "Rec: " << newRecoveryEvent->timeStamp << std::endl;
                         eventHeap->insert(newRecoveryEvent);
+
+                        // std::cout << "Infected nodes distance " << neighbour->level << " at time " << currentEvent->timeStamp + j << std::endl;
                     }
                 }
             }
         }
+
+        timeEvents.push_back(std::make_pair(currentEvent->timeStamp, std::make_pair(susceptibleEventSet.size(), std::make_pair(infectionEventSet.size(), recoveryEventSet.size()))));
+        // infectedWithTime.push_back(infectionEventSet.size());
+        // susceptibleWithTime.push_back(susceptibleEventSet.size());
+        // recoveredWithTime.push_back(recoveryEventSet.size());
+    }
+
+    // for (int i = 0; i < infectedWithTime.size(); i++)
+    // {
+    //     std::cout << "At time " << i << " : ";
+    //     std::cout << infectedWithTime[i] << " " << susceptibleWithTime[i] << " " << recoveredWithTime[i] << std::endl;
+    // }
+
+    for (int i = 0; i < timeEvents.size(); i++)
+    {
+        std::cout << "At time " << timeEvents[i].first << " : ";
+        std::cout << timeEvents[i].second.first << " " << timeEvents[i].second.second.first << " " << timeEvents[i].second.second.second << std::endl;
     }
 
     for (int i = 0; i < N; i++)
     {
-        std::cout << g->nodes[i]->timeOfInfection << " ";
+        std::cout << "Node " << i << " with level " << g->nodes[i]->level << " got infected at " << g->nodes[i]->timeOfInfection << std::endl;
     }
     return 0;
 }
