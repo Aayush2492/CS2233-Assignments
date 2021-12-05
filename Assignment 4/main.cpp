@@ -2,6 +2,7 @@
 #include <vector>
 #include <ctime>
 #include <set>
+#include <fstream>
 
 #include "minHeap.h"
 #include "Node.h"
@@ -32,9 +33,9 @@ int main()
     std::set<unsigned> susceptibleEventSet;
     std::vector<time_events> timeEvents;
 
-    std::vector<unsigned> infectedWithTime;
-    std::vector<unsigned> susceptibleWithTime;
-    std::vector<unsigned> recoveredWithTime;
+    // std::vector<unsigned> infectedWithTime;
+    // std::vector<unsigned> susceptibleWithTime;
+    // std::vector<unsigned> recoveredWithTime;
 
     for (int i = 0; i < N; i++)
     {
@@ -108,6 +109,14 @@ int main()
             }
         }
 
+        if ((int)timeEvents.size() - 1 >= 0)
+        {
+            std::cout << timeEvents.size() << std::endl;
+            if (timeEvents[timeEvents.size() - 1].first == currentEvent->timeStamp)
+            {
+                timeEvents.pop_back();
+            }
+        }
         timeEvents.push_back(std::make_pair(currentEvent->timeStamp, std::make_pair(susceptibleEventSet.size(), std::make_pair(infectionEventSet.size(), recoveryEventSet.size()))));
         // infectedWithTime.push_back(infectionEventSet.size());
         // susceptibleWithTime.push_back(susceptibleEventSet.size());
@@ -120,10 +129,14 @@ int main()
     //     std::cout << infectedWithTime[i] << " " << susceptibleWithTime[i] << " " << recoveredWithTime[i] << std::endl;
     // }
 
+    std::ofstream outfile;
+    outfile.open("data.csv");
+
     for (int i = 0; i < timeEvents.size(); i++)
     {
-        std::cout << "At time " << timeEvents[i].first << " : ";
-        std::cout << timeEvents[i].second.first << " " << timeEvents[i].second.second.first << " " << timeEvents[i].second.second.second << std::endl;
+        // std::cout << "At time " << timeEvents[i].first << " : ";
+        // std::cout << timeEvents[i].second.first << " " << timeEvents[i].second.second.first << " " << timeEvents[i].second.second.second << std::endl;
+        outfile << timeEvents[i].first << "," << timeEvents[i].second.first << "," << timeEvents[i].second.second.first << "," << timeEvents[i].second.second.second << std::endl;
     }
 
     for (int i = 0; i < N; i++)
