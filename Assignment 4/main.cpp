@@ -8,7 +8,7 @@
 #include "Graph.h"
 #include "Event.h"
 
-#define N 100
+#define N 5
 
 /**
  *
@@ -35,9 +35,10 @@ int main()
     unsigned randomIndex = rand() % N;
     unsigned i = 0;
     Event *firstEvent = new Event(i, g->nodes[randomIndex], -1);
-    Event *recoveryOfPrevious = new Event(i + 2, g->nodes[randomIndex], 1);
+    Event *recoveryOfPrevious = new Event(i + rand() % 4 + 1, g->nodes[randomIndex], 1);
     eventHeap->insert(firstEvent);
     eventHeap->insert(recoveryOfPrevious);
+    g->nodes[randomIndex]->timeOfInfection = 0;
 
     g->BreadthFirstSearch(g->nodes[randomIndex]);
 
@@ -48,59 +49,69 @@ int main()
     while (eventHeap->events.size() > 0)
     {
         Event *currentEvent = eventHeap->deleteMin();
+        std::cout << currentEvent->timeStamp << "," << currentEvent->typeOfEvent << ":";
+
+        std::cout << susceptibleEventSet.size() << " ";
+        std::cout << infectionEventSet.size() << " ";
+        std::cout << recoveryEventSet.size() << std::endl;
+
         if (currentEvent->typeOfEvent == 1)
         {
             // If recovery event
             recoveryEventSet.insert(currentEvent->person->id);
-            currentEvent->person->state = 1;
+            // currentEvent->person->state = 1;
             infectionEventSet.erase(currentEvent->person->id);
         }
         else if (currentEvent->typeOfEvent == -1)
         {
             // If infection event
             infectionEventSet.insert(currentEvent->person->id);
-            currentEvent->person->state = -1;
+            // currentEvent->person->state = -1;
             susceptibleEventSet.erase(currentEvent->person->id);
 
             Node *currentNode = currentEvent->person;
             unsigned currentIndex = currentNode->id;
             for (unsigned i = 0; i < N; i++)
             {
-                if (g->adjacencyMatrix[currentIndex][i] == true)
+                if (g->adjacencyMatrix[currentIndex][i] == true && g->nodes[i]->timeOfInfection == -1)
                 {
+                    // timeOfInfection = -1 guarantees that the node is not in the heap with infection event
                     unsigned neighborIndex = i;
                     Node *neighbour = g->nodes[neighborIndex];
-                    if (neighbour->state == 0)
+
+                    unsigned j = 1;
+                    for (j = 1; j <= 5; j++)
                     {
-                        // Susceptible neighbour
-                        // Susceptible neighbour is infected with probability 1-(1/32) = 31/32 = 0.96875
-                        unsigned j = 1;
-                        for (j = 1; j <= 5; j++)
+                        if (rand() % 2 == 0)
                         {
-                            if (rand() % 2 == 0)
-                            {
-                                // Head
-                                break;
-                            }
-                        }
-                        if (j == 6)
-                        {
-                            // Head never appeared
+                            // Head
                             break;
                         }
-                        else
-                        {
-                            Event *newInfectionEvent = new Event(currentEvent->timeStamp + j, neighbour, -1);
-                            eventHeap->insert(newInfectionEvent);
-                            Event *newRecoveryEvent = new Event(currentEvent->timeStamp + j + rand() % 4 + 1, neighbour, 1);
-                            eventHeap->insert(newRecoveryEvent);
-                        }
+                    }
+                    if (j == 6)
+                    {
+                        // Head never appeared
+                        break;
+                    }
+                    else
+                    {
+                        // std::cout << "j = " << j << std::endl;
+                        Event *newInfectionEvent = new Event(currentEvent->timeStamp + j, neighbour, -1);
+                        std::cout << "Inf: " << newInfectionEvent->timeStamp << std::endl;
+                        eventHeap->insert(newInfectionEvent);
+                        g->nodes[i]->timeOfInfection = currentEvent->timeStamp + j;
+                        Event *newRecoveryEvent = new Event(currentEvent->timeStamp + j + rand() % 4 + 1, neighbour, 1);
+                        std::cout << "Rec: " << newRecoveryEvent->timeStamp << std::endl;
+                        eventHeap->insert(newRecoveryEvent);
                     }
                 }
             }
         }
-        std::cout << currentEvent->timeStamp << std::endl;
     }
 
+    for (int i = 0; i < N; i++)
+    {
+        std::cout << g->nodes[i]->timeOfInfection << " ";
+    }
     return 0;
 }
