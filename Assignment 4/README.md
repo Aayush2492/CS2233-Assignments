@@ -29,3 +29,6 @@ OR
 ```
 pip3 install matplotlib
 ```
+
+### Plot of the simulation
+![Plot of the simulation](https://github.com/Aayush2492/CS2233-Assignments/blob/master/Assignment%204/plot.png?raw=true)
