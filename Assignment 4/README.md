@@ -8,7 +8,7 @@ Run the code using the following command in the terminal:
 g++ -I include/ -std=c++14 *.cpp -o exec && ./exec
 ```
 
-This will create a data.csv file containing the number of SIR people at each timestamp.
+This will create a `data.csv` file containing the number of SIR people at each timestamp.
 To plot the data, run.
 
 ```
